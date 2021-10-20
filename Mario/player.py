@@ -284,7 +284,7 @@ firecount = 0
 open_canvas(WIDTH, HEIGHT)
 
 background = Map()
-
+mario = player
 
 running = True
 player = Mario()
