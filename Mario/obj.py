@@ -2,6 +2,13 @@ import random
 from pico2d import *
 
 
+def res(file):
+	return file
+
+
+def resl(files):
+	return [f for f in files]
+
 def move_obj(obj):
     pass
 
