@@ -11,7 +11,9 @@ def resl(files):
 
 
 def move_obj(obj):
-    pass
+    frame = 0
+	if frame > 0:
+		pass
 
 if __name__ == "__main__":
 	print("This file is not supposed to be executed directly.")
