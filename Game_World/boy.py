@@ -72,6 +72,7 @@ class WalkState:
         elif event == LEFT_UP:
             boy.velocity += 1
         boy.dir = boy.velocity
+        boy.timer = 1000
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -102,6 +103,7 @@ class WalkState:
 class RunState:
 
     def enter(boy, event):
+        boy.timer = 1000
         boy.dir = boy.velocity
 
     def exit(boy, event):
