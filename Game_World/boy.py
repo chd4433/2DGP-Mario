@@ -6,12 +6,13 @@ history = []
 
 
 # Boy Event
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SLEEP_TIMER, SHIFT_DOWN, SHIFT_UP, DASH_TIMER, DEBUG_KEY, SPACE = range(10)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SHIFT_DOWN, SHIFT_UP, DASH_TIMER, DEBUG_KEY, FIRE_KEY, SPACE, JUMP_TIMER = range(11)
 
-event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP', 'SLEEP_TIMER', 'SHIFT_DOWN', 'SHIFT_UP', 'DASH_TIMER', 'DEBUG_KEY', 'SPACE']
+event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP', 'SHIFT_DOWN', 'SHIFT_UP', 'DASH_TIMER', 'DEBUG_KEY', 'FIRE_KEY', 'SPACE', 'JUMP_TIMER']
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_SPACE): SPACE,
+    (SDL_KEYDOWN, SDLK_c): FIRE_KEY,
     (SDL_KEYDOWN, SDLK_v): DEBUG_KEY,
 
     (SDL_KEYDOWN, SDLK_LSHIFT): SHIFT_DOWN,
@@ -43,23 +44,23 @@ class IdleState:
         boy.timer = 1000
 
     def exit(boy, event):
-        if event == SPACE:
+        if event == FIRE_KEY:
             boy.fire_ball()
 
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
         boy.timer -= 1
-        if boy.timer == 0:
-            boy.add_event(SLEEP_TIMER)
 
     def draw(boy):
         if boy.dir == 1:
-            boy.image.clip_draw(boy.frame * 100, 300, 100, 100, boy.x, boy.y)
+            boy.image = load_image('res\idle\idle.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
-            boy.image.clip_draw(boy.frame * 100, 200, 100, 100, boy.x, boy.y)
+            boy.image = load_image('res\idle\idleL.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 
-class RunState:
+class WalkState:
 
     def enter(boy, event):
         if event == RIGHT_DOWN:
@@ -73,68 +74,110 @@ class RunState:
         boy.dir = boy.velocity
 
     def exit(boy, event):
-        if event == SPACE:
+        if event == FIRE_KEY:
             boy.fire_ball()
 
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
+        boy.timer -= 1
+        boy.x += 0.5 * boy.velocity
+        boy.x = clamp(25, boy.x, 1600 - 25)
+        if boy.timer == 0:
+            boy.add_event(DASH_TIMER)
+
+    def draw(boy):
+        if boy.velocity == 1:
+            if boy.frame == 0:
+                boy.image = load_image('res\walk\walk1.png')
+            elif boy.frame == 1:
+                boy.image = load_image('res\walk\walk2.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+        else:
+            if boy.frame == 0:
+                boy.image = load_image('res\walk\walkL1.png')
+            elif boy.frame == 1:
+                boy.image = load_image('res\walk\walkL2.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+
+class RunState:
+
+    def enter(boy, event):
+        boy.dir = boy.velocity
+
+    def exit(boy, event):
+        if event == FIRE_KEY:
+            boy.fire_ball()
+
+    def do(boy):
+        boy.frame = (boy.frame + 1) % 2
         boy.timer -= 1
         boy.x += boy.velocity
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
         if boy.velocity == 1:
-            boy.image.clip_draw(boy.frame * 100, 100, 100, 100, boy.x, boy.y)
+            if boy.frame == 0:
+                boy.image = load_image('res\\run\\run1.png')
+            elif boy.frame == 1:
+                boy.image = load_image('res\\run\\run2.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
-            boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
+            if boy.frame == 0:
+                boy.image = load_image('res\\run\\runL1.png')
+            elif boy.frame == 1:
+                boy.image = load_image('res\\run\\runL2.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 
-class DashState:
+class JumpState:
 
     def enter(boy, event):
-        print('ENTER DASH')
+        if event == RIGHT_DOWN:
+            boy.velocity += 1
+        elif event == LEFT_DOWN:
+            boy.velocity -= 1
+        elif event == RIGHT_UP:
+            boy.velocity -= 1
+        elif event == LEFT_UP:
+            boy.velocity += 1
         boy.dir = boy.velocity
 
     def exit(boy, event):
-        pass
+        if event == FIRE_KEY:
+            boy.fire_ball()
 
     def do(boy):
-        boy.frame = (boy.frame + 1) % 8
+        boy.frame = (boy.frame + 1) % 2
         boy.timer -= 1
-        boy.x += 5 * boy.velocity
+        boy.x += boy.velocity
+        if boy.timer >= 700:
+            boy.y += abs(boy.velocity)
+        else:
+            boy.y -= abs(boy.velocity)
+            if boy.y <= 90:
+                boy.add_event(JUMP_TIMER)
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
         if boy.velocity == 1:
-            boy.image.clip_draw(boy.frame * 100, 100, 100, 100, boy.x, boy.y)
+            if boy.frame == 0:
+                boy.image = load_image('res\jump\jump1.png')
+            elif boy.frame == 1:
+                boy.image = load_image('res\jump\jump2.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
-            boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
-
-
-class SleepState:
-
-    def enter(boy, event):
-        boy.frame = 0
-
-    def exit(boy, event):
-        pass
-
-    def do(boy):
-        boy.frame = (boy.frame + 1) % 8
-
-    def draw(boy):
-        if boy.dir == 1:
-            boy.image.clip_composite_draw(boy.frame * 100, 300, 100, 100, 3.141592 / 2, '', boy.x - 25, boy.y - 25, 100, 100)
-        else:
-            boy.image.clip_composite_draw(boy.frame * 100, 200, 100, 100, -3.141592 / 2, '', boy.x + 25, boy.y - 25, 100, 100)
-
+            if boy.frame == 0:
+                boy.image = load_image('res\jump\jumpL1.png')
+            elif boy.frame == 1:
+                boy.image = load_image('res\jump\jumpL2.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 next_state_table = {
-    DashState: {SHIFT_UP: RunState, DASH_TIMER:RunState, RIGHT_DOWN: IdleState, LEFT_DOWN:IdleState, RIGHT_UP:IdleState, LEFT_UP:IdleState  },
-    IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState, SLEEP_TIMER: SleepState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, SPACE: IdleState},
-    RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
-               SHIFT_DOWN:DashState, SHIFT_UP: RunState, SPACE: RunState},
-    SleepState: {LEFT_DOWN: RunState, RIGHT_DOWN: RunState, LEFT_UP: RunState, RIGHT_UP: RunState}
+    RunState: {SHIFT_UP: WalkState, DASH_TIMER:WalkState, RIGHT_DOWN: IdleState, LEFT_DOWN:IdleState, RIGHT_UP:IdleState, LEFT_UP:IdleState, SPACE:JumpState},
+    IdleState: {RIGHT_UP: WalkState, LEFT_UP: WalkState, RIGHT_DOWN: WalkState, LEFT_DOWN: WalkState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, FIRE_KEY: IdleState, SPACE:JumpState},
+    WalkState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
+               SHIFT_DOWN:RunState, SHIFT_UP: WalkState, FIRE_KEY: WalkState, DASH_TIMER: RunState, SPACE:JumpState},
+    JumpState: {JUMP_TIMER: WalkState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN:JumpState, SPACE:JumpState}
 }
 
 
@@ -142,7 +185,7 @@ class Boy:
 
     def __init__(self):
         self.x, self.y = 1600 // 2, 90
-        self.image = load_image('animation_sheet.png')
+        self.image = load_image('res\idle\idle.png')
         self.dir = 1
         self.velocity = 0
         self.frame = 0
