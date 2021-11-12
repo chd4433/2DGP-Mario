@@ -83,7 +83,7 @@ class WalkState:
         boy.timer -= 1
         boy.x += 0.5 * boy.velocity
         boy.x = clamp(25, boy.x, 1600 - 25)
-        if boy.timer == 0:
+        if boy.timer <= 750:
             boy.add_event(DASH_TIMER)
 
     def draw(boy):
