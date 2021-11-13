@@ -4,6 +4,9 @@ from ball import Ball
 
 history = []
 
+idle = []
+idle.append(load_image('res\idle\idle.png'))
+idle.append(load_image('res\idle\idleL.png'))
 
 # Boy Event
 RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SHIFT_DOWN, SHIFT_UP, DASH_TIMER, DEBUG_KEY, FIRE_KEY, SPACE, JUMP_TIMER = range(11)
