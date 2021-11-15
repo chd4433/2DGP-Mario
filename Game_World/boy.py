@@ -5,13 +5,12 @@ from ball import Ball
 history = []
 
 idle = []
-idle.append(load_image('res\idle\idle.png'))
-idle.append(load_image('res\idle\idleL.png'))
+
 
 # Boy Event
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SHIFT_DOWN, SHIFT_UP, DASH_TIMER, DEBUG_KEY, FIRE_KEY, SPACE, JUMP_TIMER = range(11)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SHIFT_DOWN, SHIFT_UP, DASH_TIMER, DEBUG_KEY, FIRE_KEY, SPACE, JUMP_TIMER1, JUMP_TIMER2 = range(12)
 
-event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP', 'SHIFT_DOWN', 'SHIFT_UP', 'DASH_TIMER', 'DEBUG_KEY', 'FIRE_KEY', 'SPACE', 'JUMP_TIMER']
+event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP', 'SHIFT_DOWN', 'SHIFT_UP', 'DASH_TIMER', 'DEBUG_KEY', 'FIRE_KEY', 'SPACE', 'JUMP_TIMER1', 'JUMP_TIMER2']
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_SPACE): SPACE,
@@ -56,10 +55,10 @@ class IdleState:
 
     def draw(boy):
         if boy.dir == 1:
-            boy.image = load_image('res\idle\idle.png')
+            boy.image = idle[0]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
-            boy.image = load_image('res\idle\idleL.png')
+            boy.image = idle[1]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 
@@ -147,6 +146,7 @@ class JumpState:
             boy.velocity += 1
         boy.dir = boy.velocity
 
+
     def exit(boy, event):
         if event == FIRE_KEY:
             boy.fire_ball()
@@ -154,17 +154,22 @@ class JumpState:
     def do(boy):
         boy.frame = (boy.frame + 1) % 2
         boy.timer -= 1
-        boy.x += boy.velocity
-        if boy.timer >= 700:
-            boy.y += abs(boy.velocity)
+        boy.x += boy.dir
+        if boy.timer >= 800:
+            boy.y += 2
         else:
-            boy.y -= abs(boy.velocity)
-            if boy.y <= 90:
-                boy.add_event(JUMP_TIMER)
+            boy.y -= 2
+            if boy.y <= 120:
+                if boy.dir == 0:
+                    boy.add_event(JUMP_TIMER2)
+                else:
+                    boy.add_event(JUMP_TIMER1)
+
+
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
-        if boy.velocity == 1:
+        if boy.dir == 1:
             if boy.frame == 0:
                 boy.image = load_image('res\jump\jump1.png')
             elif boy.frame == 1:
@@ -182,14 +187,15 @@ next_state_table = {
     IdleState: {RIGHT_UP: WalkState, LEFT_UP: WalkState, RIGHT_DOWN: WalkState, LEFT_DOWN: WalkState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, FIRE_KEY: IdleState, SPACE:JumpState},
     WalkState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
                SHIFT_DOWN:RunState, SHIFT_UP: WalkState, FIRE_KEY: WalkState, DASH_TIMER: RunState, SPACE:JumpState},
-    JumpState: {JUMP_TIMER: WalkState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN:JumpState, SPACE:JumpState}
+    JumpState: {JUMP_TIMER1: WalkState, JUMP_TIMER2: IdleState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN:JumpState, SPACE:JumpState}
 }
 
 
 class Boy:
 
     def __init__(self):
-        self.x, self.y = 1600 // 2, 90
+        global idle
+        self.x, self.y = 1560 // 2, 120
         self.image = load_image('res\idle\idle.png')
         self.dir = 1
         self.velocity = 0
@@ -197,6 +203,8 @@ class Boy:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+        idle.append(load_image('res\idle\idle.png'))
+        idle.append(load_image('res\idle\idleL.png'))
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -220,6 +228,9 @@ class Boy:
     def draw(self):
         self.cur_state.draw(self)
         debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir))
+        
+    def getX(self):
+        return self.x
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

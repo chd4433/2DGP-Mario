@@ -8,6 +8,7 @@ import game_world
 
 from boy import Boy
 from grass import Grass
+from MapTile import MapTile
 from ball import Ball
 
 
@@ -19,9 +20,11 @@ grass = None
 def enter():
     global boy
     boy = Boy()
-    grass = Grass()
-    game_world.add_object(grass, 0)
-    game_world.add_object(boy, 1)
+    # grass = Grass()
+    mapTile = MapTile()
+    game_world.add_object(boy, 0)
+    game_world.add_object(mapTile, 1)
+
 
 
 def exit():
