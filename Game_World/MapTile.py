@@ -3,6 +3,8 @@ import re
 from block import Block
 from boy import Boy
 
+
+
 class MapTile:
     def __init__(self):
         self.MovingX = 0
@@ -11,11 +13,13 @@ class MapTile:
         Load_Map("map1.py")
 
     def update(self):
-        self.MovingX = Boy.getX() - 1560//2
+        pass
 
     def draw(self):
         draw_block(self.MovingX)
 
+    def set_movingX(self, X):
+        self.MovingX = X
 
 
 def Load_Map(NAME):

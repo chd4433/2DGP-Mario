@@ -83,7 +83,8 @@ class WalkState:
     def do(boy):
         boy.frame = (boy.frame + 1) % 8
         boy.timer -= 1
-        boy.x += 0.5 * boy.velocity
+        # boy.x += 0.5 * boy.velocity
+        boy.MovingX += 0.5 * boy.velocity
         boy.x = clamp(25, boy.x, 1600 - 25)
         if boy.timer <= 750:
             boy.add_event(DASH_TIMER)
@@ -115,7 +116,8 @@ class RunState:
     def do(boy):
         boy.frame = (boy.frame + 1) % 2
         boy.timer -= 1
-        boy.x += boy.velocity
+        # boy.x += boy.velocity
+        boy.MovingX += boy.velocity
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
@@ -154,7 +156,8 @@ class JumpState:
     def do(boy):
         boy.frame = (boy.frame + 1) % 2
         boy.timer -= 1
-        boy.x += boy.dir
+        # boy.x += boy.dir
+        boy.MovingX += boy.dir
         if boy.timer >= 800:
             boy.y += 2
         else:
@@ -195,7 +198,8 @@ class Boy:
 
     def __init__(self):
         global idle
-        self.x, self.y = 1560 // 2, 120
+        self.x, self.y = 800 // 2, 120
+        self.MovingX = 0
         self.image = load_image('res\idle\idle.png')
         self.dir = 1
         self.velocity = 0
@@ -230,7 +234,7 @@ class Boy:
         debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir))
         
     def getX(self):
-        return self.x
+        return self.MovingX
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:

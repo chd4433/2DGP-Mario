@@ -9,28 +9,41 @@ import game_world
 from boy import Boy
 from grass import Grass
 from MapTile import MapTile
+from Mob import Gomba, Turtle
 from ball import Ball
+
 
 
 name = "MainState"
 
 boy = None
-grass = None
-
+mapTile = None
+Mob_Gomba = None
+Mob_Tuttle = None
+# mapTile = MapTile()
+# boy = Boy()
 def enter():
     global boy
+    global mapTile
+    global Mob_Gomba, Mob_Tuttle
     boy = Boy()
     # grass = Grass()
     mapTile = MapTile()
-    game_world.add_object(boy, 0)
-    game_world.add_object(mapTile, 1)
+    Mob_Gomba = Gomba()
+    Mob_Tuttle = Turtle()
+    game_world.add_object(mapTile, 0)
+    game_world.add_object(boy, 1)
+    game_world.add_object(Mob_Gomba, 2)
+    game_world.add_object(Mob_Tuttle, 2)
+
 
 
 
 def exit():
-    global boy, grass
+    global boy, mapTile, Mob_Gomba, Mob_Tuttle
     del boy
-    del grass
+    del mapTile
+    del Mob_Gomba
 
 def pause():
     pass
@@ -52,6 +65,10 @@ def handle_events():
 
 
 def update():
+    global boy, mapTile, Mob_Gomba, Mob_Tuttle
+    mapTile.set_movingX(boy.getX())
+    Mob_Gomba.set_movingX(boy.getX())
+    Mob_Tuttle.set_movingX(boy.getX())
     for game_object in game_world.all_objects():
         game_object.update()
 

@@ -2,7 +2,7 @@ from pico2d import *
 from block import Block
 import re
 
-MapWidth, MapHeight = 1560, 600
+MapWidth, MapHeight = 800, 600
 
 open_canvas(MapWidth, MapHeight)
 FILE_NAME = "map1.py"
