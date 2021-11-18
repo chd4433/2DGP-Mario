@@ -65,12 +65,28 @@ def hadle_events():
             if event.key == SDLK_z:
                 Load_Map(FILE_NAME)
             if event.key == SDLK_v:
+                block_collision += 1
                 if block_collision == 0:
-                    block_collision = 1
-                    print("충돌 O")
-                elif block_collision == 1:
-                    block_collision = 0
                     print("충돌 x")
+                elif block_collision == 1:
+                    print("충돌 O")
+                elif block_collision == 2:
+                    print("충돌 버섯 아이템")
+                elif block_collision == 3:
+                    print("충돌 꽃 아이템")
+                else: print("잘못된 범위",block_collision)
+            if event.key == SDLK_b:
+                block_collision -= 1
+                if block_collision == 0:
+                    print("충돌 x")
+                elif block_collision == 1:
+                    print("충돌 O")
+                elif block_collision == 2:
+                    print("충돌 버섯 아이템")
+                elif block_collision == 3:
+                    print("충돌 꽃 아이템")
+                else:
+                    print("잘못된 범위", block_collision)
         if event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT:
                 mouseX, mouseY = (event.x + MovingX)//60 * 60, ((MapHeight - 1 - event.y) + MovingY)//60 * 60
