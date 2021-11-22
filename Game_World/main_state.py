@@ -85,6 +85,15 @@ def collide_leftright(a, b):
         else: return False
     else: return False
 
+def collide_all(a, b):
+    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+    if left_b < right_a < right_b:
+        return 1
+    elif left_b < left_a < right_b:
+        return 2
+    
+
 def enter():
     global boy
     global mapTile
@@ -160,12 +169,14 @@ def update():
                         boy.get_grabity(False)
                         if i.collision == 2:
                             i.collision = 1
+                            i.type += 1
                             item_mushroom = Mushroom(i.x+30, i.y+30)
                             item_mushroom.MovingX = boy.getX()
                             itemlist.append(item_mushroom)
                             game_world.add_object(item_mushroom, 3)
                         if i.collision == 3:
                             i.collision = 1
+                            i.type += 1
                             item_Flower = Flower(i.x+30, i.y+30)
                             item_Flower.MovingX = boy.getX()
                             itemlist_Flower.append(item_Flower)
@@ -179,6 +190,10 @@ def update():
                 #     boy.get_bool_leftmove(True)
                 #     boy.x -= 2
                 bool_jumpdown = True
+        else:
+            collideUpDown_false(boy, i)
+            if bool_all_tile == False:
+                boy.get_grabity(False)
     for i in itemlist:
         if collide(boy, i):
             itemlist.remove(i)

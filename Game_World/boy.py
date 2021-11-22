@@ -660,7 +660,7 @@ class Boy:
         self.bool_rightmove = check
 
     def fire_ball(self):
-        ball = Ball(self.x, self.y, self.dir )
+        ball = Ball(self.x, self.y, self.dir * 2)
         game_world.add_object(ball, 1)
     def draw(self):
         self.cur_state.draw(self)

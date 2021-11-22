@@ -43,6 +43,8 @@ class MapTile:
     def draw_block(self, MovingX):
         for i in range(len(self.Tilelist)):
             self.blocklist[self.Tilelist[i].type].clip_draw(0, 0, 16, 16, self.Tilelist[i].x + 30 - MovingX, self.Tilelist[i].y + 30, 60, 60)
+        # for i in self.Tilelist:
+        #     draw_rectangle(*i.get_bb())
 
 
 
