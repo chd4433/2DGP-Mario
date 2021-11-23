@@ -11,6 +11,8 @@ from grass import Grass
 from MapTile import *
 from Mob import Gomba, Turtle
 from item import Mushroom, Flower
+import collision
+import server
 from ball import Ball
 
 
@@ -24,11 +26,13 @@ boy = None
 mapTile = None
 Mob_Gomba = None
 Mob_Tuttle = None
+
 bool_all_tile = False
 bool_all_tile2 = False
 bool_jumpdown = True
 # mapTile = MapTile()
 # boy = Boy()
+
 def collide(a, b):
     left_a , bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
@@ -80,7 +84,7 @@ def collide_leftright(a, b):
     left_a , bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
     if bottom_b < top_a < top_b or bottom_b < bottom_a< top_b:
-        if left_b < right_a < right_b or left_b < left_a < right_b  :
+        if left_b < right_a < right_b or left_b < left_a < right_b :
             return True
         else: return False
     else: return False
@@ -92,7 +96,6 @@ def collide_all(a, b):
         return 1
     elif left_b < left_a < right_b:
         return 2
-    
 
 def enter():
     global boy
