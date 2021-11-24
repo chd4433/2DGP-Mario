@@ -96,6 +96,10 @@ def collide_all(a, b):
         return 1
     elif left_b < left_a < right_b:
         return 2
+    elif bottom_b < bottom_a < top_b:
+        return 3
+    elif bottom_b < top_a < top_b:
+        return 4
 
 def enter():
     global boy
@@ -210,10 +214,12 @@ def update():
 
     for j in Moblist:
         if collide(boy, j):
-            if collide_leftright(boy, j):
+            if collide_all(boy, j) == 1:
                 print('데미지')
-            if collideUpDown(boy, j):
-                j.booldeath = True
+            # if collide_leftright(boy, j):
+                # print('데미지')
+            # if collideUpDown(boy, j):
+            #     j.booldeath = True
         if j.deathtime >= 10:
             Moblist.remove(j)
             game_world.remove_object(j)

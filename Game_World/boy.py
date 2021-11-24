@@ -615,6 +615,7 @@ class Boy:
         self.boolbig = False
         self.boolFlower = False
         self.plagY = 0
+        self.invincibility = False
         for i in range(6):
             idle.append(load_image('res\idle\idle%d.png' % i))
 
@@ -639,13 +640,18 @@ class Boy:
             self.cur_state.enter(self, event)
 
     def get_bb_stop(self):
-        return self.x + self.MovingX - 20, self.y - 60, self.x + self.MovingX + 20, self.y
+        if self.invincibility:
+            return self.x + self.MovingX - 20, self.y - 60, self.x + self.MovingX + 20, self.y
+        else: return 0,0,0,0
 
     def get_bb(self):
-        if self.boolbig:
-            return self.x - 20, self.y - 60, self.x + 20, self.y + 60
-        else:
-            return self.x - 20, self.y - 60, self.x + 20, self.y
+        if self.invincibility:
+            if self.boolbig:
+                return self.x - 20, self.y - 60, self.x + 20, self.y + 60
+            else:
+                return self.x - 20, self.y - 60, self.x + 20, self.y
+        else: return 0,0,0,0
+
 
     def get_grabity(self, check):
         self.grabity = check
