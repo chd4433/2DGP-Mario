@@ -213,9 +213,15 @@ def update():
             boy.boolFlower = True
 
     for j in Moblist:
-        if collide(boy, j):
-            if collide_all(boy, j) == 1:
-                print('데미지')
+        if boy.invincibility == False:
+            if collide(boy, j):
+                if collide_all(boy, j) == 1:
+                    boy.get_invincibility(True)
+                    print('데미지')
+                elif collide_all(boy, j) == 3:
+                    print('밟기')
+
+
             # if collide_leftright(boy, j):
                 # print('데미지')
             # if collideUpDown(boy, j):

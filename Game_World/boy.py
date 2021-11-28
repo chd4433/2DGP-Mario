@@ -51,6 +51,7 @@ class IdleState:
         elif event == LEFT_UP and boy.bool_rightmove == False:
             boy.velocity += 1
         boy.timer = 1000
+        boy.timer2 = 1000
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -63,6 +64,11 @@ class IdleState:
             boy.y -= 2;
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
     def draw(boy):
         if boy.dir == 1:
             boy.image = idle[0]
@@ -85,6 +91,7 @@ class WalkState:
             boy.velocity += 1
         boy.dir = boy.velocity
         boy.timer = 1000
+        boy.timer2 = 1000
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -103,7 +110,11 @@ class WalkState:
             boy.add_event(DASH_TIMER)
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
-
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
     def draw(boy):
         if boy.velocity == 1:
             if int(boy.frame) == 0:
@@ -122,6 +133,7 @@ class RunState:
 
     def enter(boy, event):
         boy.timer = 1000
+        boy.timer2 = 1000
         boy.dir = boy.velocity
 
     def exit(boy, event):
@@ -138,6 +150,11 @@ class RunState:
             boy.MovingX += 2 * boy.velocity
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
@@ -172,6 +189,7 @@ class JumpState:
     def exit(boy, event):
         if event == FIRE_KEY:
             boy.fire_ball()
+            boy.timer2 = 1000
 
     def do(boy):
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
@@ -193,23 +211,30 @@ class JumpState:
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
 
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
+
 
 
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
-        if boy.dir == 1:
-            if int(boy.frame) == 0:
-                boy.image = load_image('res\jump\jump1.png')
-            elif int(boy.frame) == 1:
-                boy.image = load_image('res\jump\jump2.png')
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
-        else:
+        if boy.dir == -1:
             if int(boy.frame) == 0:
                 boy.image = load_image('res\jump\jumpL1.png')
             elif int(boy.frame) == 1:
                 boy.image = load_image('res\jump\jumpL2.png')
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+        else:
+            if int(boy.frame) == 0:
+                boy.image = load_image('res\jump\jump1.png')
+            elif int(boy.frame) == 1:
+                boy.image = load_image('res\jump\jump2.png')
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+
 
 
 class IdleState_Big:
@@ -224,6 +249,7 @@ class IdleState_Big:
         elif event == LEFT_UP and boy.bool_rightmove == False:
             boy.velocity += 1
         boy.timer = 1000
+        boy.timer2 = 1000
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -236,6 +262,12 @@ class IdleState_Big:
             boy.y -= 2;
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
     def draw(boy):
         if boy.dir == 1:
             boy.image = idle[2]
@@ -258,6 +290,7 @@ class WalkState_Big:
             boy.velocity += 1
         boy.dir = boy.velocity
         boy.timer = 1000
+        boy.timer2 = 1000
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -276,6 +309,12 @@ class WalkState_Big:
             boy.add_event(DASH_TIMER)
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
 
 
     def draw(boy):
@@ -300,6 +339,7 @@ class RunState_Big:
 
     def enter(boy, event):
         boy.timer = 1000
+        boy.timer2 = 1000
         boy.dir = boy.velocity
 
     def exit(boy, event):
@@ -317,6 +357,12 @@ class RunState_Big:
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
             boy.MovingX += 2 * boy.velocity
         boy.x = clamp(25, boy.x, 1600 - 25)
+
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
 
     def draw(boy):
         if boy.velocity == 1:
@@ -349,6 +395,7 @@ class JumpState_Big:
         elif event == LEFT_UP:
             boy.velocity += 1
         boy.dir = boy.velocity
+        boy.timer2 = 1000
 
 
     def exit(boy, event):
@@ -374,6 +421,12 @@ class JumpState_Big:
                     boy.add_event(JUMP_TIMER1)
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
 
 
 
@@ -407,6 +460,7 @@ class IdleState_Flower:
         elif event == LEFT_UP and boy.bool_rightmove == False:
             boy.velocity += 1
         boy.timer = 1000
+        boy.timer2 = 1000
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -417,6 +471,12 @@ class IdleState_Flower:
         boy.timer -= 1
         if boy.grabity == False:
             boy.y -= 2;
+
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
     def draw(boy):
         if boy.dir == 1:
             boy.image = idle[4]
@@ -439,6 +499,7 @@ class WalkState_Flower:
             boy.velocity += 1
         boy.dir = boy.velocity
         boy.timer = 1000
+        boy.timer2 = 1000
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -455,6 +516,11 @@ class WalkState_Flower:
             boy.y -= 2;
         if boy.timer <= 750:
             boy.add_event(DASH_TIMER)
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
 
 
     def draw(boy):
@@ -479,6 +545,7 @@ class RunState_Flower:
 
     def enter(boy, event):
         boy.timer = 1000
+        boy.timer2 = 1000
         boy.dir = boy.velocity
 
     def exit(boy, event):
@@ -494,6 +561,12 @@ class RunState_Flower:
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
             boy.MovingX += 2 * boy.velocity
         boy.x = clamp(25, boy.x, 1600 - 25)
+
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
 
     def draw(boy):
         if boy.velocity == 1:
@@ -526,6 +599,7 @@ class JumpState_Flower:
         elif event == LEFT_UP:
             boy.velocity += 1
         boy.dir = boy.velocity
+        boy.timer2 = 1000
 
 
     def exit(boy, event):
@@ -549,6 +623,12 @@ class JumpState_Flower:
                     boy.add_event(JUMP_TIMER2)
                 else:
                     boy.add_event(JUMP_TIMER1)
+
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
 
 
 
@@ -640,17 +720,13 @@ class Boy:
             self.cur_state.enter(self, event)
 
     def get_bb_stop(self):
-        if self.invincibility:
-            return self.x + self.MovingX - 20, self.y - 60, self.x + self.MovingX + 20, self.y
-        else: return 0,0,0,0
+        return self.x + self.MovingX - 20, self.y - 60, self.x + self.MovingX + 20, self.y
 
     def get_bb(self):
-        if self.invincibility:
-            if self.boolbig:
-                return self.x - 20, self.y - 60, self.x + 20, self.y + 60
-            else:
-                return self.x - 20, self.y - 60, self.x + 20, self.y
-        else: return 0,0,0,0
+        if self.boolbig:
+            return self.x - 20, self.y - 60, self.x + 20, self.y + 60
+        else:
+            return self.x - 20, self.y - 60, self.x + 20, self.y
 
 
     def get_grabity(self, check):
@@ -664,6 +740,9 @@ class Boy:
 
     def get_bool_rightmove(self, check):
         self.bool_rightmove = check
+
+    def get_invincibility(self, check):
+        self.invincibility = check
 
     def fire_ball(self):
         ball = Ball(self.x, self.y, self.dir * 2)
