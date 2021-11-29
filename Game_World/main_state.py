@@ -101,6 +101,47 @@ def collide_all(a, b):
     elif bottom_b < top_a < top_b:
         return 4
 
+
+def collide_only_all(a, b):
+    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+    if bottom_b <= top_a <= (top_b + bottom_b) / 2:
+        if left_b <= left_a <= right_b:
+            return 'top'
+        if left_b <= right_a <= right_b:
+            return 'top'
+        if left_b >= left_a and right_a >= right_b:
+            return 'top'
+
+    if (top_b + bottom_b) / 2 <= bottom_a <= top_b :
+        if left_b <= left_a <= right_b:
+            return 'bottom'
+        if left_b <= right_a <= right_b:
+            return 'bottom'
+        if left_b >= left_a and right_a >= right_b:
+            return 'bottom'
+
+    if (left_b + right_b) / 2 <= left_a <= right_b:
+        if bottom_b <= top_a <= top_b:
+            return 'left'
+        if bottom_b <= bottom_a <= top_b:
+            return 'left'
+        if bottom_a <= top_b <= bottom_b:
+            return 'left'
+        if bottom_a <= bottom_b <= bottom_b:
+            return 'left'
+
+    if left_b  <= right_a <= (left_b + right_b) / 2:
+        if bottom_b <= top_a <= top_b:
+            return 'right'
+        if bottom_b <= bottom_a <= top_b:
+            return 'right'
+        if bottom_a <= top_b <= bottom_b:
+            return 'right'
+        if bottom_a <= bottom_b <= bottom_b:
+            return 'right'
+
+
 def enter():
     global boy
     global mapTile
@@ -168,6 +209,13 @@ def update():
                     if j.set_grabitycheck == False:
                         j.get_grabity(False)
             if collide(boy, i):
+                if collide_only_all(boy, i) == "left":
+                    print("left")
+                    boy.before_movingx()
+                elif collide_only_all(boy, i) == "right":
+                    print("right")
+                    boy.before_movingx()
+
                 if i.y < boy.plagY < i.y + 10:
                     if collidejump(boy, i):
                         boy.y -= 5
@@ -215,17 +263,12 @@ def update():
     for j in Moblist:
         if boy.invincibility == False:
             if collide(boy, j):
-                if collide_all(boy, j) == 1:
+                if collide_only_all(boy, j) == 'left' or collide_only_all(boy, j) == 'right':
                     boy.get_invincibility(True)
                     print('데미지')
-                elif collide_all(boy, j) == 3:
+                if collide_only_all(boy, j) == 'bottom':
                     print('밟기')
-
-
-            # if collide_leftright(boy, j):
-                # print('데미지')
-            # if collideUpDown(boy, j):
-            #     j.booldeath = True
+                    j.booldeath = True
         if j.deathtime >= 10:
             Moblist.remove(j)
             game_world.remove_object(j)

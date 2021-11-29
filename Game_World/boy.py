@@ -6,6 +6,17 @@ import game_framework
 history = []
 
 idle = []
+walk = []
+run = []
+jump = []
+
+PIXEL_PER_METER = (10.0 / 0.3)
+RUN_SPEED_KMPH = 20.0
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
+
+
 
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -43,13 +54,13 @@ class IdleState:
 
     def enter(boy, event):
         if event == RIGHT_DOWN and boy.bool_leftmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN and boy.bool_rightmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP and boy.bool_leftmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP and boy.bool_rightmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         boy.timer = 1000
         boy.timer2 = 1000
 
@@ -82,16 +93,17 @@ class WalkState:
 
     def enter(boy, event):
         if event == RIGHT_DOWN and boy.bool_leftmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN and boy.bool_rightmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP and boy.bool_leftmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP and boy.bool_rightmove == False:
-            boy.velocity += 1
-        boy.dir = boy.velocity
+            boy.velocity += RUN_SPEED_PPS
+        boy.dir = clamp(-1,boy.velocity, 1)
         boy.timer = 1000
         boy.timer2 = 1000
+        boy.runstate = False
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -102,7 +114,7 @@ class WalkState:
         boy.timer -= 1
         # boy.x += 0.5 * boy.velocity
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += boy.velocity
+            boy.MovingX += boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
         if boy.grabity == False:
             boy.y -= 2;
@@ -116,17 +128,17 @@ class WalkState:
                 boy.timer2 = 1000
                 boy.invincibility = False
     def draw(boy):
-        if boy.velocity == 1:
+        if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\walk\walk1.png')
+                boy.image = walk[0]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\walk\walk2.png')
+                boy.image = walk[1]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\walk\walkL1.png')
+                boy.image = walk[2]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\walk\walkL2.png')
+                boy.image = walk[3]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 class RunState:
@@ -134,7 +146,8 @@ class RunState:
     def enter(boy, event):
         boy.timer = 1000
         boy.timer2 = 1000
-        boy.dir = boy.velocity
+        boy.dir = clamp(-1,boy.velocity, 1)
+        boy.runstate = True
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -147,7 +160,7 @@ class RunState:
         if boy.grabity == False:
             boy.y -= 2;
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += 2 * boy.velocity
+            boy.MovingX += 2 * boy.velocity * game_framework.frame_time
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
         if boy.invincibility:
@@ -158,17 +171,17 @@ class RunState:
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
-        if boy.velocity == 1:
+        if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\\run\\run1.png')
+                boy.image = run[0]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\\run\\run2.png')
+                boy.image = run[1]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\\run\\runL1.png')
+                boy.image = run[2]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\\run\\runL2.png')
+                boy.image = run[3]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 
@@ -176,14 +189,15 @@ class JumpState:
 
     def enter(boy, event):
         if event == RIGHT_DOWN:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP:
-            boy.velocity += 1
-        boy.dir = boy.velocity
+            boy.velocity += RUN_SPEED_PPS
+        boy.dir = clamp(-1,boy.velocity, 1)
+        boy.runstate = False
 
 
     def exit(boy, event):
@@ -195,7 +209,7 @@ class JumpState:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         boy.timer -= 1
         # boy.x += boy.dir
-        boy.MovingX += boy.dir
+        boy.MovingX += boy.velocity * game_framework.frame_time
 
         if boy.timer >= 800 and boy.booljump == False:
             boy.y += 2
@@ -222,17 +236,17 @@ class JumpState:
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
-        if boy.dir == -1:
+        if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\jump\jumpL1.png')
+                boy.image = jump[0]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\jump\jumpL2.png')
+                boy.image = jump[1]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\jump\jump1.png')
+                boy.image = jump[2]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\jump\jump2.png')
+                boy.image = jump[3]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 
@@ -241,13 +255,13 @@ class IdleState_Big:
 
     def enter(boy, event):
         if event == RIGHT_DOWN and boy.bool_leftmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN and boy.bool_rightmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP and boy.bool_leftmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP and boy.bool_rightmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         boy.timer = 1000
         boy.timer2 = 1000
 
@@ -281,16 +295,17 @@ class WalkState_Big:
 
     def enter(boy, event):
         if event == RIGHT_DOWN and boy.bool_leftmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN and boy.bool_rightmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP and boy.bool_leftmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP and boy.bool_rightmove == False:
-            boy.velocity += 1
-        boy.dir = boy.velocity
+            boy.velocity += RUN_SPEED_PPS
+        boy.dir = clamp(-1,boy.velocity, 1)
         boy.timer = 1000
         boy.timer2 = 1000
+        boy.runstate = False
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -301,7 +316,7 @@ class WalkState_Big:
         boy.timer -= 1
         # boy.x += 0.5 * boy.velocity
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += boy.velocity
+            boy.MovingX += boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
         if boy.grabity == False:
             boy.y -= 2;
@@ -318,21 +333,21 @@ class WalkState_Big:
 
 
     def draw(boy):
-        if boy.velocity == 1:
+        if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\walk\walk1_big.png')
+                boy.image = walk[4]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\walk\walk2_big.png')
+                boy.image = walk[5]
             elif int(boy.frame) == 2:
-                boy.image = load_image('res\walk\walk3_big.png')
+                boy.image = walk[6]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\walk\walkL1_big.png')
+                boy.image = walk[7]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\walk\walkL2_big.png')
+                boy.image = walk[8]
             elif int(boy.frame) == 3:
-                boy.image = load_image('res\walk\walkL3_big.png')
+                boy.image = walk[9]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 class RunState_Big:
@@ -340,7 +355,8 @@ class RunState_Big:
     def enter(boy, event):
         boy.timer = 1000
         boy.timer2 = 1000
-        boy.dir = boy.velocity
+        boy.dir = clamp(-1,boy.velocity, 1)
+        boy.runstate = True
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -355,7 +371,7 @@ class RunState_Big:
         if boy.grabity == False:
             boy.y -= 2;
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += 2 * boy.velocity
+            boy.MovingX += 2 * boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
 
         if boy.invincibility:
@@ -365,21 +381,21 @@ class RunState_Big:
                 boy.invincibility = False
 
     def draw(boy):
-        if boy.velocity == 1:
+        if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\\run\\run1_big.png')
+                boy.image = run[4]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\\run\\run2_big.png')
+                boy.image = run[5]
             elif int(boy.frame) == 2:
-                boy.image = load_image('res\\run\\run3_big.png')
+                boy.image = run[6]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\\run\\runL1_big.png')
+                boy.image = run[7]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\\run\\runL2_big.png')
+                boy.image = run[8]
             elif int(boy.frame) == 2:
-                boy.image = load_image('res\\run\\runL3_big.png')
+                boy.image = run[9]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 
@@ -387,15 +403,16 @@ class JumpState_Big:
 
     def enter(boy, event):
         if event == RIGHT_DOWN:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP:
-            boy.velocity += 1
-        boy.dir = boy.velocity
+            boy.velocity += RUN_SPEED_PPS
+        boy.dir = clamp(-1,boy.velocity, 1)
         boy.timer2 = 1000
+        boy.runstate = False
 
 
     def exit(boy, event):
@@ -406,7 +423,7 @@ class JumpState_Big:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         boy.timer -= 1
         # boy.x += boy.dir
-        boy.MovingX += boy.dir
+        boy.MovingX += boy.velocity * game_framework.frame_time
 
         if boy.timer >= 800 and boy.booljump == False:
             boy.y += 2
@@ -436,15 +453,15 @@ class JumpState_Big:
     def draw(boy):
         if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\jump\jump1_big.png')
+                boy.image = jump[4]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\jump\jump2_big.png')
+                boy.image = jump[5]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\jump\jumpL1_big.png')
+                boy.image = jump[6]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\jump\jumpL2_big.png')
+                boy.image = jump[7]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 
@@ -452,13 +469,13 @@ class IdleState_Flower:
 
     def enter(boy, event):
         if event == RIGHT_DOWN and boy.bool_leftmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN and boy.bool_rightmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP and boy.bool_leftmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP and boy.bool_rightmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         boy.timer = 1000
         boy.timer2 = 1000
 
@@ -490,16 +507,17 @@ class WalkState_Flower:
 
     def enter(boy, event):
         if event == RIGHT_DOWN and boy.bool_leftmove == False:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN and boy.bool_rightmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP and boy.bool_leftmove == False:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP and boy.bool_rightmove == False:
-            boy.velocity += 1
-        boy.dir = boy.velocity
+            boy.velocity += RUN_SPEED_PPS
+        boy.dir = clamp(-1,boy.velocity, 1)
         boy.timer = 1000
         boy.timer2 = 1000
+        boy.runstate = False
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -510,7 +528,7 @@ class WalkState_Flower:
         boy.timer -= 1
         # boy.x += 0.5 * boy.velocity
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += boy.velocity
+            boy.MovingX += boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
         if boy.grabity == False:
             boy.y -= 2;
@@ -524,21 +542,21 @@ class WalkState_Flower:
 
 
     def draw(boy):
-        if boy.velocity == 1:
+        if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\walk\walk1_fire.png')
+                boy.image = walk[10]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\walk\walk2_fire.png')
+                boy.image = walk[11]
             elif int(boy.frame) == 2:
-                boy.image = load_image('res\walk\walk3_fire.png')
+                boy.image = walk[12]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\walk\walkL1_fire.png')
+                boy.image = walk[13]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\walk\walkL2_fire.png')
+                boy.image = walk[14]
             elif int(boy.frame) == 3:
-                boy.image = load_image('res\walk\walkL3_fire.png')
+                boy.image = walk[15]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 class RunState_Flower:
@@ -546,7 +564,8 @@ class RunState_Flower:
     def enter(boy, event):
         boy.timer = 1000
         boy.timer2 = 1000
-        boy.dir = boy.velocity
+        boy.dir = clamp(-1,boy.velocity, 1)
+        boy.runstate = True
 
     def exit(boy, event):
         if event == FIRE_KEY:
@@ -559,7 +578,7 @@ class RunState_Flower:
         if boy.grabity == False:
             boy.y -= 2;
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += 2 * boy.velocity
+            boy.MovingX += 2 * boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
 
         if boy.invincibility:
@@ -569,21 +588,21 @@ class RunState_Flower:
                 boy.invincibility = False
 
     def draw(boy):
-        if boy.velocity == 1:
+        if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\\run\\run1_fire.png')
+                boy.image = run[10]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\\run\\run2_fire.png')
+                boy.image = run[11]
             elif int(boy.frame) == 2:
-                boy.image = load_image('res\\run\\run3_fire.png')
+                boy.image = run[12]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\\run\\runL1_fire.png')
+                boy.image = run[13]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\\run\\runL2_fire.png')
+                boy.image = run[14]
             elif int(boy.frame) == 2:
-                boy.image = load_image('res\\run\\runL3_fire.png')
+                boy.image = run[15]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 
@@ -591,15 +610,16 @@ class JumpState_Flower:
 
     def enter(boy, event):
         if event == RIGHT_DOWN:
-            boy.velocity += 1
+            boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP:
-            boy.velocity -= 1
+            boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP:
-            boy.velocity += 1
-        boy.dir = boy.velocity
+            boy.velocity += RUN_SPEED_PPS
+        boy.dir = clamp(-1,boy.velocity, 1)
         boy.timer2 = 1000
+        boy.runstate = False
 
 
     def exit(boy, event):
@@ -610,7 +630,7 @@ class JumpState_Flower:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         boy.timer -= 1
         # boy.x += boy.dir
-        boy.MovingX += boy.dir
+        boy.MovingX += boy.velocity * game_framework.frame_time
 
         if boy.timer >= 800 and boy.booljump == False:
             boy.y += 2
@@ -637,15 +657,15 @@ class JumpState_Flower:
     def draw(boy):
         if boy.dir == 1:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\jump\jump1_fire.png')
+                boy.image = jump[8]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\jump\jump2_fire.png')
+                boy.image = jump[9]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
         else:
             if int(boy.frame) == 0:
-                boy.image = load_image('res\jump\jumpL1_fire.png')
+                boy.image = jump[10]
             elif int(boy.frame) == 1:
-                boy.image = load_image('res\jump\jumpL2_fire.png')
+                boy.image = jump[11]
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 next_state_table = {
@@ -696,8 +716,16 @@ class Boy:
         self.boolFlower = False
         self.plagY = 0
         self.invincibility = False
+        self.runstate = False
+
         for i in range(6):
             idle.append(load_image('res\idle\idle%d.png' % i))
+        for i in range(16):
+            walk.append(load_image('res\walk\walk%d.png' % i))
+        for i in range(16):
+            run.append(load_image('res\\run\\run%d.png' % i))
+        for i in range(12):
+            jump.append(load_image('res\jump\jump%d.png' % i))
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -743,6 +771,12 @@ class Boy:
 
     def get_invincibility(self, check):
         self.invincibility = check
+
+    def before_movingx(self):
+        if self.runstate == False:
+            self.MovingX -= self.velocity * game_framework.frame_time
+        else:
+            self.MovingX -= 2 * self.velocity * game_framework.frame_time
 
     def fire_ball(self):
         ball = Ball(self.x, self.y, self.dir * 2)
