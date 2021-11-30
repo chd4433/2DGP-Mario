@@ -774,7 +774,7 @@ class Boy:
 
     def before_movingx(self):
         if self.runstate == False:
-            self.MovingX -= self.velocity * game_framework.frame_time
+            self.MovingX -= self.velocity * game_framework.frame_time + 1
         else:
             self.MovingX -= 2 * self.velocity * game_framework.frame_time
 
