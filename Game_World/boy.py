@@ -707,17 +707,17 @@ class JumpState_Flower:
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 next_state_table = {
-    RunState: {SHIFT_UP: WalkState, DASH_TIMER:WalkState, RIGHT_DOWN: IdleState, LEFT_DOWN:IdleState, RIGHT_UP:IdleState, LEFT_UP:IdleState, SPACE:JumpState, TRANS_BIG: RunState_Big, DEATH: DeathState },
+    RunState: {SHIFT_UP: WalkState, DASH_TIMER:WalkState, RIGHT_DOWN: IdleState, LEFT_DOWN:IdleState, RIGHT_UP:IdleState, LEFT_UP:IdleState, SPACE:JumpState, TRANS_BIG: RunState_Big, DEATH: DeathState},
     IdleState: {RIGHT_UP: WalkState, LEFT_UP: WalkState, RIGHT_DOWN: WalkState, LEFT_DOWN: WalkState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, FIRE_KEY: IdleState, SPACE:JumpState, TRANS_BIG: IdleState_Big, DEATH: DeathState},
     WalkState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
                SHIFT_DOWN:RunState, SHIFT_UP: WalkState, FIRE_KEY: WalkState, DASH_TIMER: RunState, SPACE:JumpState, TRANS_BIG:WalkState_Big, DEATH: DeathState},
-    JumpState: {JUMP_TIMER1: WalkState, JUMP_TIMER2: IdleState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN:JumpState, SPACE:JumpState, TRANS_BIG:IdleState_Big, DEATH: DeathState},
+    JumpState: {JUMP_TIMER1: WalkState, JUMP_TIMER2: IdleState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN:JumpState, SPACE:JumpState, TRANS_BIG:IdleState_Big, DEATH: DeathState, SHIFT_UP: JumpState , SHIFT_DOWN: JumpState },
 
     RunState_Big: {SHIFT_UP: WalkState_Big, DASH_TIMER:WalkState_Big, RIGHT_DOWN: IdleState_Big, LEFT_DOWN:IdleState_Big, RIGHT_UP:IdleState_Big, LEFT_UP:IdleState_Big, SPACE:JumpState_Big ,TRANS_FIRE:RunState_Flower},
     IdleState_Big: {RIGHT_UP: WalkState_Big, LEFT_UP: WalkState_Big, RIGHT_DOWN: WalkState_Big, LEFT_DOWN: WalkState_Big, SHIFT_DOWN: IdleState_Big, SHIFT_UP: IdleState_Big, FIRE_KEY: IdleState_Big, SPACE:JumpState_Big, TRANS_FIRE:IdleState_Flower},
     WalkState_Big: {RIGHT_UP: IdleState_Big, LEFT_UP: IdleState_Big, LEFT_DOWN: IdleState_Big, RIGHT_DOWN: IdleState_Big,
                SHIFT_DOWN:RunState_Big, SHIFT_UP: WalkState_Big, FIRE_KEY: WalkState_Big, DASH_TIMER: RunState_Big, SPACE:JumpState_Big ,TRANS_FIRE: WalkState_Flower},
-    JumpState_Big: {JUMP_TIMER1: WalkState_Big, JUMP_TIMER2: IdleState_Big, RIGHT_UP:JumpState_Big, LEFT_UP:JumpState_Big, RIGHT_DOWN: JumpState_Big, LEFT_DOWN:JumpState_Big, SPACE:JumpState_Big, TRANS_FIRE:IdleState_Flower},
+    JumpState_Big: {JUMP_TIMER1: WalkState_Big, JUMP_TIMER2: IdleState_Big, RIGHT_UP:JumpState_Big, LEFT_UP:JumpState_Big, RIGHT_DOWN: JumpState_Big, LEFT_DOWN:JumpState_Big, SPACE:JumpState_Big, TRANS_FIRE:IdleState_Flower, SHIFT_UP: JumpState_Big, SHIFT_DOWN:JumpState_Big},
 
     RunState_Flower: {SHIFT_UP: WalkState_Flower, DASH_TIMER: WalkState_Flower, RIGHT_DOWN: IdleState_Flower,
                     LEFT_DOWN: IdleState_Flower, RIGHT_UP: IdleState_Flower, LEFT_UP: IdleState_Flower, SPACE: JumpState_Flower, FIRE_KEY: RunState_Flower},
@@ -729,7 +729,7 @@ next_state_table = {
                     SHIFT_DOWN: RunState_Flower, SHIFT_UP: WalkState_Flower, FIRE_KEY: WalkState_Flower,
                     DASH_TIMER: RunState_Flower, SPACE: JumpState_Flower},
     JumpState_Flower: {JUMP_TIMER1: WalkState_Flower, JUMP_TIMER2: IdleState_Flower, RIGHT_UP: JumpState_Flower,
-                    LEFT_UP: JumpState_Flower, RIGHT_DOWN: JumpState_Flower, LEFT_DOWN: JumpState_Flower, SPACE: JumpState_Flower}
+                    LEFT_UP: JumpState_Flower, RIGHT_DOWN: JumpState_Flower, LEFT_DOWN: JumpState_Flower, SPACE: JumpState_Flower, SHIFT_UP: JumpState_Flower, SHIFT_DOWN: JumpState_Flower}
 }
 
 
