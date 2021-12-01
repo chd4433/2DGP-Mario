@@ -14,6 +14,8 @@ from item import Mushroom, Flower
 import collision
 import server
 from ball import Ball
+import ready_state
+import gameover_state
 
 
 
@@ -162,10 +164,11 @@ def enter():
 
 
 def exit():
-    global boy, mapTile, Moblist
-    del boy
-    del mapTile
-    del Moblist
+    # global boy, mapTile, Moblist
+    # del boy
+    # del mapTile
+    # del Moblist
+    game_world.clear()
 
 def pause():
     pass
@@ -272,14 +275,14 @@ def update():
         if j.deathtime >= 10:
             Moblist.remove(j)
             game_world.remove_object(j)
-
-
-
-
-
-
-
     bool_all_tile = False
+
+    if boy.death:
+        server.life -= 1
+        if server.life >= 0:
+            game_framework.change_state(ready_state)
+        else:
+            game_framework.change_state(gameover_state)
 
 
 

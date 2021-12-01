@@ -2,6 +2,7 @@ from pico2d import *
 import game_world
 from ball import Ball
 import game_framework
+import server
 
 history = []
 
@@ -26,9 +27,9 @@ TIME_PER_ACTION_RUN = 0.3
 ACTION_PER_TIME_RUN = 1.0 / TIME_PER_ACTION_RUN
 
 # Boy Event
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SHIFT_DOWN, SHIFT_UP, DASH_TIMER, DEBUG_KEY, FIRE_KEY, SPACE, JUMP_TIMER1, JUMP_TIMER2, TRANS_BIG, TRANS_FIRE = range(14)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, SHIFT_DOWN, SHIFT_UP, DASH_TIMER, DEBUG_KEY, FIRE_KEY, SPACE, JUMP_TIMER1, JUMP_TIMER2, TRANS_BIG, TRANS_FIRE, DEATH = range(15)
 
-event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP', 'SHIFT_DOWN', 'SHIFT_UP', 'DASH_TIMER', 'DEBUG_KEY', 'FIRE_KEY', 'SPACE', 'JUMP_TIMER1', 'JUMP_TIMER2', 'TRANS_BIG', 'TRANS_FIRE']
+event_name = ['RIGHT_DOWN', 'LEFT_DOWN', 'RIGHT_UP', 'LEFT_UP', 'SHIFT_DOWN', 'SHIFT_UP', 'DASH_TIMER', 'DEBUG_KEY', 'FIRE_KEY', 'SPACE', 'JUMP_TIMER1', 'JUMP_TIMER2', 'TRANS_BIG', 'TRANS_FIRE', 'DEATH']
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_SPACE): SPACE,
@@ -49,6 +50,38 @@ key_event_table = {
 
 
 # Boy States
+class DeathState:
+    def enter(boy, event):
+        boy.timer = 1000
+
+    def exit(boy, event):
+        pass
+
+    def do(boy):
+        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
+        boy.timer -= 1
+        if boy.invincibility:
+            boy.timer2 -= 1
+            if boy.timer2 <= 500:
+                boy.timer2 = 1000
+                boy.invincibility = False
+
+        if boy.timer >= 900:
+            boy.y += 1
+        else:
+            if boy.y >= -100:
+                boy.y -= 2;
+            else:
+                boy.death = True
+
+    def draw(boy):
+        if int(boy.frame) == 0:
+            boy.image = load_image('res\dead\dead1.png')
+        elif int(boy.frame) == 1:
+            boy.image = load_image('res\dead\dead2.png')
+        boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+
+
 
 class IdleState:
 
@@ -77,9 +110,11 @@ class IdleState:
             boy.add_event(TRANS_BIG)
         if boy.invincibility:
             boy.timer2 -= 1
+            # boy.add_event(DEATH)
             if boy.timer2 <= 500:
                 boy.timer2 = 1000
                 boy.invincibility = False
+
     def draw(boy):
         if boy.dir == 1:
             boy.image = idle[0]
@@ -127,6 +162,7 @@ class WalkState:
             if boy.timer2 <= 500:
                 boy.timer2 = 1000
                 boy.invincibility = False
+                boy.add_event(DEATH)
     def draw(boy):
         if boy.dir == 1:
             if int(boy.frame) == 0:
@@ -168,6 +204,7 @@ class RunState:
             if boy.timer2 <= 500:
                 boy.timer2 = 1000
                 boy.invincibility = False
+                boy.add_event(DEATH)
         boy.x = clamp(25, boy.x, 1600 - 25)
 
     def draw(boy):
@@ -230,6 +267,7 @@ class JumpState:
             if boy.timer2 <= 500:
                 boy.timer2 = 1000
                 boy.invincibility = False
+                boy.add_event(DEATH)
 
 
 
@@ -669,11 +707,11 @@ class JumpState_Flower:
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 next_state_table = {
-    RunState: {SHIFT_UP: WalkState, DASH_TIMER:WalkState, RIGHT_DOWN: IdleState, LEFT_DOWN:IdleState, RIGHT_UP:IdleState, LEFT_UP:IdleState, SPACE:JumpState, TRANS_BIG: RunState_Big },
-    IdleState: {RIGHT_UP: WalkState, LEFT_UP: WalkState, RIGHT_DOWN: WalkState, LEFT_DOWN: WalkState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, FIRE_KEY: IdleState, SPACE:JumpState, TRANS_BIG: IdleState_Big},
+    RunState: {SHIFT_UP: WalkState, DASH_TIMER:WalkState, RIGHT_DOWN: IdleState, LEFT_DOWN:IdleState, RIGHT_UP:IdleState, LEFT_UP:IdleState, SPACE:JumpState, TRANS_BIG: RunState_Big, DEATH: DeathState },
+    IdleState: {RIGHT_UP: WalkState, LEFT_UP: WalkState, RIGHT_DOWN: WalkState, LEFT_DOWN: WalkState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, FIRE_KEY: IdleState, SPACE:JumpState, TRANS_BIG: IdleState_Big, DEATH: DeathState},
     WalkState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
-               SHIFT_DOWN:RunState, SHIFT_UP: WalkState, FIRE_KEY: WalkState, DASH_TIMER: RunState, SPACE:JumpState, TRANS_BIG:WalkState_Big},
-    JumpState: {JUMP_TIMER1: WalkState, JUMP_TIMER2: IdleState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN:JumpState, SPACE:JumpState, TRANS_BIG:IdleState_Big},
+               SHIFT_DOWN:RunState, SHIFT_UP: WalkState, FIRE_KEY: WalkState, DASH_TIMER: RunState, SPACE:JumpState, TRANS_BIG:WalkState_Big, DEATH: DeathState},
+    JumpState: {JUMP_TIMER1: WalkState, JUMP_TIMER2: IdleState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN:JumpState, SPACE:JumpState, TRANS_BIG:IdleState_Big, DEATH: DeathState},
 
     RunState_Big: {SHIFT_UP: WalkState_Big, DASH_TIMER:WalkState_Big, RIGHT_DOWN: IdleState_Big, LEFT_DOWN:IdleState_Big, RIGHT_UP:IdleState_Big, LEFT_UP:IdleState_Big, SPACE:JumpState_Big ,TRANS_FIRE:RunState_Flower},
     IdleState_Big: {RIGHT_UP: WalkState_Big, LEFT_UP: WalkState_Big, RIGHT_DOWN: WalkState_Big, LEFT_DOWN: WalkState_Big, SHIFT_DOWN: IdleState_Big, SHIFT_UP: IdleState_Big, FIRE_KEY: IdleState_Big, SPACE:JumpState_Big, TRANS_FIRE:IdleState_Flower},
@@ -717,6 +755,7 @@ class Boy:
         self.plagY = 0
         self.invincibility = False
         self.runstate = False
+        self.death = False
 
         for i in range(6):
             idle.append(load_image('res\idle\idle%d.png' % i))
@@ -774,9 +813,15 @@ class Boy:
 
     def before_movingx(self):
         if self.runstate == False:
-            self.MovingX -= self.velocity * game_framework.frame_time + 1
+            if self.dir == 1:
+                self.MovingX -= self.velocity * game_framework.frame_time + 1
+            else:
+                self.MovingX -= self.velocity * game_framework.frame_time - 1
         else:
-            self.MovingX -= 2 * self.velocity * game_framework.frame_time
+            if self.dir == 1:
+                self.MovingX -= 2 * self.velocity * game_framework.frame_time + 2
+            else:
+                self.MovingX -= 2 * self.velocity * game_framework.frame_time - 2
 
     def fire_ball(self):
         ball = Ball(self.x, self.y, self.dir * 2)
