@@ -11,6 +11,9 @@ def add_object(o, layer):
 def add_objects(l, layer):
     objects[layer] += l
 
+def select_object(l):
+    return objects[l]
+
 
 def remove_object(o):
     for i in range(len(objects)):

@@ -28,10 +28,17 @@ class Ball:
             self.image = Ball.imagelist[2]
         elif int(self.frame) == 3:
             self.image = Ball.imagelist[3]
-        self.image.clip_draw(0, 0, 8, 8, self.x, self.y, 16, 16)
+        self.image.clip_draw(0, 0, 8, 8, self.x , self.y, 16, 16)
+        draw_rectangle(*self.get_bb())
 
     def update(self):
         self.x += self.velocity
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
-        if self.x < 25 or self.x > 1600 - 25:
+        if self.x < 0 or self.x > 800:
             game_world.remove_object(self)
+
+    def set_movingX(self, X):
+        self.MovingX = X
+
+    def get_bb(self):
+        return self.x - 8, self.y - 8, self.x + 8, self.y + 8

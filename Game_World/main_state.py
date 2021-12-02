@@ -29,6 +29,7 @@ mapTile = None
 Mob_Gomba = None
 Mob_Tuttle = None
 
+
 bool_all_tile = False
 bool_all_tile2 = False
 bool_jumpdown = True
@@ -150,7 +151,7 @@ def enter():
     global Moblist, Mob_Gomba, Mob_Tuttle
     boy = Boy()
     # grass = Grass()
-    mapTile = MapTile()
+    mapTile = MapTile('map1.py')
     Mob_Gomba = Gomba()
     Mob_Tuttle = Turtle()
     Moblist.append(Mob_Gomba)
@@ -159,6 +160,7 @@ def enter():
     game_world.add_object(boy, 1)
     game_world.add_object(Mob_Gomba, 2)
     game_world.add_object(Mob_Tuttle, 2)
+    boy.get_maxtile(mapTile.maxtile_x)
 
 
 
@@ -198,6 +200,8 @@ def update():
     for i in itemlist:
         i.MovingX = boy.getX()
     for i in itemlist_Flower:
+        i.MovingX = boy.getX()
+    for i in game_world.select_object(3):
         i.MovingX = boy.getX()
     mapTile.set_movingX(boy.getX())
     Mob_Gomba.set_movingX(boy.getX())
@@ -278,6 +282,12 @@ def update():
         if j.deathtime >= 10:
             Moblist.remove(j)
             game_world.remove_object(j)
+
+        for k in game_world.select_object(3):
+            if collide(j, k):
+                print('불맞음')
+                j.booldeath = True
+                game_world.remove_object(k)
     bool_all_tile = False
 
     if boy.death:
