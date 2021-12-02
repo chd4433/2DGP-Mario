@@ -1,6 +1,7 @@
 from pico2d import *
 import game_framework
 import game_world
+import time
 
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -10,7 +11,7 @@ FRAMES_PER_ACTION = 2
 
 class Gomba():
     def __init__(self):
-        self.x, self.y = 700, 200
+        self.x, self.y = 1300, 200
         self.image = load_image('res\Mob\gomba_1.png')
         self.dir = -1
         self.velocity = -1
@@ -20,6 +21,7 @@ class Gomba():
         self.grabity_check = False
         self.booldeath = False
         self.deathtime = 0
+        self.time = time.time()
 
     def update(self):
         self.x += 0.3 * self.velocity
@@ -47,6 +49,10 @@ class Gomba():
     def set_grabitycheck(self):
         return self.grabity_check
 
+    def mob_lifetime(self):
+        life_time = time.time()
+        return life_time - self.time
+
 
 
     def collideUpDown_false(self, a, b):
@@ -67,7 +73,7 @@ class Gomba():
 
 class Turtle():
     def __init__(self):
-        self.x, self.y = 900, 200
+        self.x, self.y = 2200, 200
         self.image = load_image('res\Mob\Turtle_1.png')
         self.dir = -1
         self.velocity = -1

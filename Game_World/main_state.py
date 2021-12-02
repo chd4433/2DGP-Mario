@@ -164,10 +164,12 @@ def enter():
 
 
 def exit():
-    # global boy, mapTile, Moblist
+    global boy, mapTile, Moblist
     # del boy
     # del mapTile
-    # del Moblist
+    Moblist.clear()
+    # for i in Moblist:
+    #     Moblist.remove(i)
     game_world.clear()
 
 def pause():
@@ -268,6 +270,7 @@ def update():
             if collide(boy, j):
                 if collide_only_all(boy, j) == 'left' or collide_only_all(boy, j) == 'right':
                     boy.get_invincibility(True)
+                    # print(j.mob_lifetime())
                     print('데미지')
                 if collide_only_all(boy, j) == 'bottom':
                     print('밟기')
