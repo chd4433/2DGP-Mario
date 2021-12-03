@@ -111,7 +111,7 @@ class IdleState:
         boy.timer -= 1
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
         if boy.boolbig:
@@ -173,7 +173,7 @@ class WalkState:
         boy.x = clamp(25, boy.x, 800 - 25)
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
         if boy.timer <= 750:
@@ -219,7 +219,7 @@ class RunState:
         # boy.x += boy.velocity
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
@@ -274,6 +274,7 @@ class JumpState:
             boy.velocity += RUN_SPEED_PPS
         boy.dir = clamp(-1,boy.velocity, 1)
         boy.runstate = False
+        boy.jumpy = boy.y
 
 
     def exit(boy, event):
@@ -298,12 +299,12 @@ class JumpState:
         elif boy.x == 400:
             boy.MovingX += boy.velocity * game_framework.frame_time
 
-        if boy.timer >= 800 and boy.booljump == False:
-            boy.y += 2
+        if boy.timer >= 850 and boy.booljump == False :
+            boy.y += 2.5
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
-                    boy.y -= 2
+                    boy.y -= 3
                 else:
                     boy.add_event(DEATH)
             else:
@@ -366,7 +367,7 @@ class IdleState_Big:
         boy.timer -= 1
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
         if boy.boolFlower:
@@ -428,7 +429,7 @@ class WalkState_Big:
         boy.x = clamp(25, boy.x, 800 - 25)
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
         if boy.timer <= 750:
@@ -483,7 +484,7 @@ class RunState_Big:
             boy.add_event(TRANS_FIRE)
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
@@ -565,12 +566,12 @@ class JumpState_Big:
         elif boy.x == 400:
             boy.MovingX += boy.velocity * game_framework.frame_time
 
-        if boy.timer >= 800 and boy.booljump == False:
-            boy.y += 2
+        if boy.timer >= 850 and boy.booljump == False:
+            boy.y += 2.5
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
-                    boy.y -= 2
+                    boy.y -= 3
                 else:
                     boy.add_event(DEATH)
             else:
@@ -633,7 +634,7 @@ class IdleState_Flower:
         boy.timer -= 1
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
 
@@ -693,7 +694,7 @@ class WalkState_Flower:
         boy.x = clamp(25, boy.x, 800 - 25)
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
         if boy.timer <= 750:
@@ -743,7 +744,7 @@ class RunState_Flower:
         # boy.x += boy.velocity
         if boy.grabity == False:
             if boy.y >= -50:
-                boy.y -= 2
+                boy.y -= 3
             else:
                 boy.add_event(DEATH)
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
@@ -825,12 +826,12 @@ class JumpState_Flower:
         elif boy.x == 400:
             boy.MovingX += boy.velocity * game_framework.frame_time
 
-        if boy.timer >= 800 and boy.booljump == False:
-            boy.y += 2
+        if boy.timer >= 850 and boy.booljump == False:
+            boy.y += 2.5
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
-                    boy.y -= 2
+                    boy.y -= 3
                 else:
                     boy.add_event(DEATH)
             else:
@@ -922,6 +923,7 @@ class Boy:
         self.runstate = False
         self.death = False
         self.maxtile_x = 0
+        self.jumpy = 0
 
         for i in range(6):
             idle.append(load_image('res\idle\idle%d.png' % i))

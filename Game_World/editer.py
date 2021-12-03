@@ -11,7 +11,7 @@ TEST = "Test.py"
 Tilelist = list()
 blocklist = []
 blockType = 0
-for i in range(53):
+for i in range(54):
     blocklist.append(load_image('./res/map/block/b%d.png' % i))
 # Tilelist.append(Block(mouseX, mouseY, blockType, False))
 
@@ -44,12 +44,12 @@ def hadle_events():
         if event.type == SDL_KEYDOWN:
             if event.key == SDLK_q:
                 blockType += 1
-                if blockType > 52:
+                if blockType > 53:
                     blockType = 0
             elif event.key == SDLK_w:
                 blockType -= 1
                 if blockType < 0:
-                    blockType = 52
+                    blockType = 53
             if event.key == SDLK_RIGHT:
                 MovingX += 120
             elif event.key == SDLK_LEFT:
@@ -60,6 +60,7 @@ def hadle_events():
                 for i in range(len(Tilelist)):
                     f.write("Block(%d, %d, %d, %d),\n" % (Tilelist[i].x , Tilelist[i].y, Tilelist[i].type, Tilelist[i].collision))
                 f.close()
+                print("저장 완료")
             if event.key == SDLK_x:
                 fill_allBlock()
             if event.key == SDLK_z:
@@ -74,6 +75,8 @@ def hadle_events():
                     print("충돌 버섯 아이템")
                 elif block_collision == 3:
                     print("충돌 꽃 아이템")
+                elif block_collision == 4:
+                    print("충돌 O 부실수 없음")
                 else: print("잘못된 범위",block_collision)
             if event.key == SDLK_b:
                 block_collision -= 1
@@ -85,6 +88,8 @@ def hadle_events():
                     print("충돌 버섯 아이템")
                 elif block_collision == 3:
                     print("충돌 꽃 아이템")
+                elif block_collision == 4:
+                    print("충돌 O 부실수 없음")
                 else:
                     print("잘못된 범위", block_collision)
             if event.key == SDLK_m:

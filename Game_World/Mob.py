@@ -11,7 +11,7 @@ FRAMES_PER_ACTION = 2
 
 class Gomba():
     def __init__(self):
-        self.x, self.y = 1300, 200
+        self.x, self.y = 900, 200
         self.image = load_image('res\Mob\gomba_1.png')
         self.dir = -1
         self.velocity = -1
@@ -53,6 +53,13 @@ class Gomba():
         life_time = time.time()
         return life_time - self.time
 
+    def change_velocity(self, bool, str):
+        if bool:
+            self.velocity *= -1
+            if str == 'left':
+                self.x += 1
+            elif str == 'right':
+                self.x -= 1
 
 
     def collideUpDown_false(self, a, b):
@@ -72,9 +79,11 @@ class Gomba():
 
 
 class Turtle():
+    image = []
     def __init__(self):
-        self.x, self.y = 2200, 200
-        self.image = load_image('res\Mob\Turtle_1.png')
+        global image
+        self.x, self.y = 1600, 200
+        self.image = load_image('res\Mob\Turtle_0.png')
         self.dir = -1
         self.velocity = -1
         self.frame = 0
@@ -83,7 +92,8 @@ class Turtle():
         self.grabity_check = False
         self.booldeath = False
         self.deathtime = 0
-
+        for i in range(2):
+            Turtle.image.append(load_image('res\Mob\Turtle_%d.png' % i))
     def update(self):
         self.x += 0.3 * self.velocity
         if self.grabity == False:
@@ -92,8 +102,12 @@ class Turtle():
         if self.frame >= 2:
             self.frame = 0
         if self.booldeath:
-            self.frame = 5
-            self.deathtime += 1
+            if self.velocity == -1:
+                self.frame = 5
+                self.deathtime += 1
+            else:
+                self.frame = 0
+                self.deathtime += 1
 
     def set_movingX(self, X):
         self.MovingX = X
@@ -110,6 +124,14 @@ class Turtle():
     def set_grabitycheck(self):
         return self.grabity_check
 
+    def change_velocity(self, bool, str):
+        if bool:
+            self.velocity *= -1
+            if str == 'left':
+                self.x += 1
+            elif str == 'right':
+                self.x -= 1
+
     def collideUpDown_false(self, a, b):
         left_a, bottom_a, right_a, top_a = a.get_bb()
         left_b, bottom_b, right_b, top_b = b.get_bb()
@@ -122,5 +144,8 @@ class Turtle():
             self.grabity_check = self.grabity_check or False
 
     def draw(self):
-        self.image.clip_draw(int(self.frame) * 59, 0 ,59, 64, self.x - self.MovingX, self.y, 80, 80)
+        if self.velocity == -1:
+            Turtle.image[0].clip_draw(int(self.frame) * 59, 0 ,59, 64, self.x - self.MovingX, self.y, 80, 80)
+        else:
+            Turtle.image[1].clip_draw((5 - int(self.frame)) * 59, 0, 59, 64, self.x - self.MovingX, self.y, 80, 80)
         draw_rectangle(*self.get_bb())

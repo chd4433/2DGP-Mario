@@ -12,7 +12,7 @@ class MapTile:
         self.Tilelist = list()
         self.blocklist = []
         self.maxtile_x = 0
-        for i in range(53):
+        for i in range(54):
             self.blocklist.append(load_image('./res/map/block/b%d.png' % i))
         self.Load_Map(strmap)
 

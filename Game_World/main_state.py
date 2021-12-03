@@ -16,6 +16,7 @@ import server
 from ball import Ball
 import ready_state
 import gameover_state
+from goal import *
 
 
 
@@ -28,6 +29,7 @@ boy = None
 mapTile = None
 Mob_Gomba = None
 Mob_Tuttle = None
+destination = None
 
 
 bool_all_tile = False
@@ -148,28 +150,32 @@ def collide_only_all(a, b):
 def enter():
     global boy
     global mapTile
-    global Moblist, Mob_Gomba, Mob_Tuttle
+    global Moblist, Mob_Gomba, Mob_Tuttle, destination
     boy = Boy()
     # grass = Grass()
-    mapTile = MapTile('Test.py')
+    mapTile = MapTile('map1.py')
     Mob_Gomba = Gomba()
     Mob_Tuttle = Turtle()
     Moblist.append(Mob_Gomba)
     Moblist.append(Mob_Tuttle)
+    destination = goal(7200, 310)
     game_world.add_object(mapTile, 0)
-    game_world.add_object(boy, 1)
+    game_world.add_object(boy, 5)
     game_world.add_object(Mob_Gomba, 2)
     game_world.add_object(Mob_Tuttle, 2)
+    game_world.add_object(destination, 4)
     boy.get_maxtile(mapTile.maxtile_x)
 
 
 
 
 def exit():
-    global boy, mapTile, Moblist
+    global boy, mapTile, Moblist, itemlist, itemlist_Flower
     # del boy
     # del mapTile
     Moblist.clear()
+    itemlist.clear()
+    itemlist_Flower.clear()
     # for i in Moblist:
     #     Moblist.remove(i)
     game_world.clear()
@@ -194,7 +200,7 @@ def handle_events():
 
 
 def update():
-    global boy, mapTile, Mob_Gomba, Mob_Tuttle, bool_all_tile, bool_all_tile2, bool_jumpdown, Moblist, itemlist, itemlist_Flower
+    global boy, mapTile, Mob_Gomba, Mob_Tuttle, bool_all_tile, bool_all_tile2, bool_jumpdown, Moblist, itemlist, itemlist_Flower, destination
     for i in mapTile.Tilelist:
         i.MovingX = boy.getX()
     for i in itemlist:
@@ -203,6 +209,7 @@ def update():
         i.MovingX = boy.getX()
     for i in game_world.select_object(3):
         i.MovingX = boy.getX()
+    destination.set_movingX(boy.getX())
     mapTile.set_movingX(boy.getX())
     Mob_Gomba.set_movingX(boy.getX())
     Mob_Tuttle.set_movingX(boy.getX())
@@ -291,6 +298,14 @@ def update():
                 print('불맞음')
                 j.booldeath = True
                 game_world.remove_object(k)
+        for i in mapTile.Tilelist:
+            if i.collision >= 1:
+                if collide(j, i):
+                    if collide_only_all(j, i) == 'left':
+                        j.change_velocity(True, 'left')
+                    elif collide_only_all(j, i) == 'right':
+                        j.change_velocity(True, 'right')
+
     bool_all_tile = False
 
     if boy.death:
