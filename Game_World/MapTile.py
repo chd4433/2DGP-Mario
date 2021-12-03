@@ -28,6 +28,9 @@ class MapTile:
     def get_bb(Tilelist):
         return Tilelist.x , Tilelist.y , Tilelist.x + 60, Tilelist.y + 60
 
+    def remove(self, block):
+        self.Tilelist.remove(block)
+
     def Load_Map(self, NAME):
         fr = open(NAME, 'r')
         line = fr.readline()

@@ -157,12 +157,20 @@ class WalkState:
         boy.timer -= 1
         # boy.x += 0.5 * boy.velocity
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            if (boy.MovingX < 0 and boy.x <= 400) or (boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400):
+            if boy.MovingX < 0 and boy.x <= 400 :
                 boy.x += boy.velocity * game_framework.frame_time
-            else:
+                if boy.x > 400:
+                    boy.MovingX += boy.velocity * game_framework.frame_time
+                    boy.x = 400
+            elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+                boy.x += boy.velocity * game_framework.frame_time
+                if boy.x < 400:
+                    boy.x = 400
+                    boy.MovingX += boy.velocity * game_framework.frame_time
+            elif boy.x == 400:
                 boy.MovingX += boy.velocity * game_framework.frame_time
 
-        boy.x = clamp(25, boy.x, 1600 - 25)
+        boy.x = clamp(25, boy.x, 800 - 25)
         if boy.grabity == False:
             if boy.y >= -50:
                 boy.y -= 2
@@ -215,9 +223,17 @@ class RunState:
             else:
                 boy.add_event(DEATH)
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            if (boy.MovingX < 0 and boy.x <= 400) or (boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400):
+            if boy.MovingX < 0 and boy.x <= 400:
                 boy.x += 2 * boy.velocity * game_framework.frame_time
-            else:
+                if boy.x > 400:
+                    boy.MovingX += 2 * boy.velocity * game_framework.frame_time
+                    boy.x = 400
+            elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+                boy.x += 2 * boy.velocity * game_framework.frame_time
+                if boy.x < 400:
+                    boy.x = 400
+                    boy.MovingX += 2 * boy.velocity * game_framework.frame_time
+            elif boy.x == 400:
                 boy.MovingX += 2 * boy.velocity * game_framework.frame_time
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
@@ -228,7 +244,7 @@ class RunState:
                 boy.timer2 = 1000
                 boy.invincibility = False
                 # boy.add_event(DEATH)
-        boy.x = clamp(25, boy.x, 1600 - 25)
+        boy.x = clamp(25, boy.x, 800 - 25)
 
     def draw(boy):
         if boy.dir == 1:
@@ -269,7 +285,18 @@ class JumpState:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         boy.timer -= 1
         # boy.x += boy.dir
-        boy.MovingX += boy.velocity * game_framework.frame_time
+        if boy.MovingX < 0 and boy.x <= 400:
+            boy.x += boy.velocity * game_framework.frame_time
+            if boy.x > 400:
+                boy.MovingX += boy.velocity * game_framework.frame_time
+                boy.x = 400
+        elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+            boy.x += boy.velocity * game_framework.frame_time
+            if boy.x < 400:
+                boy.x = 400
+                boy.MovingX += boy.velocity * game_framework.frame_time
+        elif boy.x == 400:
+            boy.MovingX += boy.velocity * game_framework.frame_time
 
         if boy.timer >= 800 and boy.booljump == False:
             boy.y += 2
@@ -298,7 +325,7 @@ class JumpState:
 
 
 
-        boy.x = clamp(25, boy.x, 1600 - 25)
+        boy.x = clamp(25, boy.x, 800 - 25)
 
     def draw(boy):
         if boy.dir == 1:
@@ -386,8 +413,19 @@ class WalkState_Big:
         boy.timer -= 1
         # boy.x += 0.5 * boy.velocity
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += boy.velocity * game_framework.frame_time
-        boy.x = clamp(25, boy.x, 1600 - 25)
+            if boy.MovingX < 0 and boy.x <= 400:
+                boy.x += boy.velocity * game_framework.frame_time
+                if boy.x > 400:
+                    boy.MovingX += boy.velocity * game_framework.frame_time
+                    boy.x = 400
+            elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+                boy.x += boy.velocity * game_framework.frame_time
+                if boy.x < 400:
+                    boy.x = 400
+                    boy.MovingX += boy.velocity * game_framework.frame_time
+            elif boy.x == 400:
+                boy.MovingX += boy.velocity * game_framework.frame_time
+        boy.x = clamp(25, boy.x, 800 - 25)
         if boy.grabity == False:
             if boy.y >= -50:
                 boy.y -= 2
@@ -449,8 +487,19 @@ class RunState_Big:
             else:
                 boy.add_event(DEATH)
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += 2 * boy.velocity * game_framework.frame_time
-        boy.x = clamp(25, boy.x, 1600 - 25)
+            if boy.MovingX < 0 and boy.x <= 400:
+                boy.x += 2 * boy.velocity * game_framework.frame_time
+                if boy.x > 400:
+                    boy.MovingX += 2 * boy.velocity * game_framework.frame_time
+                    boy.x = 400
+            elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+                boy.x += 2 * boy.velocity * game_framework.frame_time
+                if boy.x < 400:
+                    boy.x = 400
+                    boy.MovingX += 2 * boy.velocity * game_framework.frame_time
+            elif boy.x == 400:
+                boy.MovingX += 2 * boy.velocity * game_framework.frame_time
+        boy.x = clamp(25, boy.x, 800- 25)
 
         if boy.invincibility:
             boy.timer2 -= 1
@@ -503,7 +552,18 @@ class JumpState_Big:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         boy.timer -= 1
         # boy.x += boy.dir
-        boy.MovingX += boy.velocity * game_framework.frame_time
+        if boy.MovingX < 0 and boy.x <= 400:
+            boy.x += boy.velocity * game_framework.frame_time
+            if boy.x > 400:
+                boy.MovingX += boy.velocity * game_framework.frame_time
+                boy.x = 400
+        elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+            boy.x += boy.velocity * game_framework.frame_time
+            if boy.x < 400:
+                boy.x = 400
+                boy.MovingX += boy.velocity * game_framework.frame_time
+        elif boy.x == 400:
+            boy.MovingX += boy.velocity * game_framework.frame_time
 
         if boy.timer >= 800 and boy.booljump == False:
             boy.y += 2
@@ -533,7 +593,7 @@ class JumpState_Big:
 
 
 
-        boy.x = clamp(25, boy.x, 1600 - 25)
+        boy.x = clamp(25, boy.x, 800 - 25)
 
     def draw(boy):
         if boy.dir == 1:
@@ -618,8 +678,19 @@ class WalkState_Flower:
         boy.timer -= 1
         # boy.x += 0.5 * boy.velocity
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += boy.velocity * game_framework.frame_time
-        boy.x = clamp(25, boy.x, 1600 - 25)
+            if boy.MovingX < 0 and boy.x <= 400:
+                boy.x += boy.velocity * game_framework.frame_time
+                if boy.x > 400:
+                    boy.MovingX += boy.velocity * game_framework.frame_time
+                    boy.x = 400
+            elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+                boy.x += boy.velocity * game_framework.frame_time
+                if boy.x < 400:
+                    boy.x = 400
+                    boy.MovingX += boy.velocity * game_framework.frame_time
+            elif boy.x == 400:
+                boy.MovingX += boy.velocity * game_framework.frame_time
+        boy.x = clamp(25, boy.x, 800 - 25)
         if boy.grabity == False:
             if boy.y >= -50:
                 boy.y -= 2
@@ -676,8 +747,19 @@ class RunState_Flower:
             else:
                 boy.add_event(DEATH)
         if boy.bool_leftmove == False and boy.bool_rightmove == False:
-            boy.MovingX += 2 * boy.velocity * game_framework.frame_time
-        boy.x = clamp(25, boy.x, 1600 - 25)
+            if boy.MovingX < 0 and boy.x <= 400:
+                boy.x += 2 * boy.velocity * game_framework.frame_time
+                if boy.x > 400:
+                    boy.MovingX += 2 * boy.velocity * game_framework.frame_time
+                    boy.x = 400
+            elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+                boy.x += 2 * boy.velocity * game_framework.frame_time
+                if boy.x < 400:
+                    boy.x = 400
+                    boy.MovingX += 2 * boy.velocity * game_framework.frame_time
+            elif boy.x == 400:
+                boy.MovingX += 2 * boy.velocity * game_framework.frame_time
+        boy.x = clamp(25, boy.x, 800 - 25)
 
         if boy.invincibility:
             boy.timer2 -= 1
@@ -730,7 +812,18 @@ class JumpState_Flower:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         boy.timer -= 1
         # boy.x += boy.dir
-        boy.MovingX += boy.velocity * game_framework.frame_time
+        if boy.MovingX < 0 and boy.x <= 400:
+            boy.x += boy.velocity * game_framework.frame_time
+            if boy.x > 400:
+                boy.MovingX += boy.velocity * game_framework.frame_time
+                boy.x = 400
+        elif boy.MovingX >= boy.maxtile_x - 800 and boy.x >= 400:
+            boy.x += boy.velocity * game_framework.frame_time
+            if boy.x < 400:
+                boy.x = 400
+                boy.MovingX += boy.velocity * game_framework.frame_time
+        elif boy.x == 400:
+            boy.MovingX += boy.velocity * game_framework.frame_time
 
         if boy.timer >= 800 and boy.booljump == False:
             boy.y += 2
@@ -757,7 +850,7 @@ class JumpState_Flower:
 
 
 
-        boy.x = clamp(25, boy.x, 1600 - 25)
+        boy.x = clamp(25, boy.x, 800 - 25)
 
     def draw(boy):
         if boy.dir == 1:

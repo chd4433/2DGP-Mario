@@ -151,7 +151,7 @@ def enter():
     global Moblist, Mob_Gomba, Mob_Tuttle
     boy = Boy()
     # grass = Grass()
-    mapTile = MapTile('map1.py')
+    mapTile = MapTile('Test.py')
     Mob_Gomba = Gomba()
     Mob_Tuttle = Turtle()
     Moblist.append(Mob_Gomba)
@@ -231,8 +231,11 @@ def update():
                         boy.get_booljump(True)
                         bool_jumpdown = False
                         boy.get_grabity(False)
+                        if i.collision == 1:
+                            if boy.boolbig == True or boy.boolFlower == True:
+                                mapTile.remove(i)
                         if i.collision == 2:
-                            i.collision = 1
+                            i.collision = 1 #수정 해야함
                             i.type += 1
                             item_mushroom = Mushroom(i.x+30, i.y+30)
                             item_mushroom.MovingX = boy.getX()

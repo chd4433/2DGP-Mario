@@ -87,10 +87,13 @@ def hadle_events():
                     print("충돌 꽃 아이템")
                 else:
                     print("잘못된 범위", block_collision)
+            if event.key == SDLK_m:
+                Tilelist.pop()
         if event.type == SDL_MOUSEBUTTONDOWN:
             if event.button == SDL_BUTTON_LEFT:
                 mouseX, mouseY = (event.x + MovingX)//60 * 60, ((MapHeight - 1 - event.y) + MovingY)//60 * 60
                 Tilelist.append(Block(mouseX , mouseY, blockType, block_collision))
+
                 # draw_block(16 * x, 16 * y, blockType)
 
 
