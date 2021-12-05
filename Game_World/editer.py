@@ -90,6 +90,8 @@ def hadle_events():
                     print("충돌 꽃 아이템")
                 elif block_collision == 4:
                     print("충돌 O 부실수 없음")
+                elif block_collision == 5:
+                    print("")
                 else:
                     print("잘못된 범위", block_collision)
             if event.key == SDLK_m:
