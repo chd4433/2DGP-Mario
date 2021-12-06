@@ -28,7 +28,7 @@ class Ball:
             self.image = Ball.imagelist[2]
         elif int(self.frame) == 3:
             self.image = Ball.imagelist[3]
-        self.image.clip_draw(0, 0, 8, 8, self.x , self.y, 16, 16)
+        self.image.clip_draw(0, 0, 8, 8, self.x, self.y, 16, 16)
         draw_rectangle(*self.get_bb())
 
     def update(self):

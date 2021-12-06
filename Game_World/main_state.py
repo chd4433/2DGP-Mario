@@ -8,9 +8,11 @@ import game_world
 
 from boy import Boy
 from grass import Grass
+from boy import DeathState, GoalState
 from MapTile import *
 from Mob import Gomba, Turtle
 from item import Mushroom, Flower
+from block import Block
 import collision
 import server
 from ball import Ball
@@ -30,7 +32,8 @@ mapTile = None
 Mob_Gomba = None
 Mob_Tuttle = None
 destination = None
-
+block = Block(0, 0, 0, 0)
+bool_grabity = False
 
 bool_all_tile = False
 bool_all_tile2 = False
@@ -154,15 +157,29 @@ def enter():
     boy = Boy()
     # grass = Grass()
     mapTile = MapTile('map1.py')
-    Mob_Gomba = Gomba()
-    Mob_Tuttle = Turtle()
+    Mob_Gomba = Gomba(800, 500, -1)
+    Mob_Tuttle = Turtle(1500, 500, -1)
     Moblist.append(Mob_Gomba)
+    Moblist.append(Gomba(1200, 500, -1))
+    Moblist.append(Gomba(1400, 500, -1))
+    Moblist.append(Gomba(2700, 80, -1))
+    Moblist.append(Gomba(2400, 1500, 1))
+    Moblist.append(Gomba(1700, 500, -1))
+    Moblist.append(Gomba(3400, 2500, 1))
+    Moblist.append(Gomba(5000, 2500, 1))
+    Moblist.append(Turtle(5000, 2500, -1))
+    Moblist.append(Turtle(4500, 2500, 1))
+    Moblist.append(Turtle(500, 2500, 1))
+    Moblist.append(Turtle(5000, 1500, -1))
+    Moblist.append(Turtle(5000, 2500, -1))
     Moblist.append(Mob_Tuttle)
     destination = goal(7200, 310)
     game_world.add_object(mapTile, 0)
     game_world.add_object(boy, 5)
-    game_world.add_object(Mob_Gomba, 2)
-    game_world.add_object(Mob_Tuttle, 2)
+    # game_world.add_object(Mob_Gomba, 2)
+    # game_world.add_object(Mob_Tuttle, 2)
+    for i in Moblist:
+        game_world.add_object(i, 2)
     game_world.add_object(destination, 4)
     boy.get_maxtile(mapTile.maxtile_x)
 
@@ -196,11 +213,14 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.quit()
         else:
-            boy.handle_event(event)
+            if boy.cur_state == DeathState or boy.cur_state == GoalState:
+                pass
+            else:
+                boy.handle_event(event)
 
 
 def update():
-    global boy, mapTile, Mob_Gomba, Mob_Tuttle, bool_all_tile, bool_all_tile2, bool_jumpdown, Moblist, itemlist, itemlist_Flower, destination
+    global boy, mapTile, Mob_Gomba, Mob_Tuttle, bool_all_tile, bool_all_tile2, bool_jumpdown, Moblist, itemlist, itemlist_Flower, destination, bool_grabity
     for i in mapTile.Tilelist:
         i.MovingX = boy.getX()
     for i in itemlist:
@@ -211,19 +231,27 @@ def update():
         i.MovingX = boy.getX()
     destination.set_movingX(boy.getX())
     mapTile.set_movingX(boy.getX())
-    Mob_Gomba.set_movingX(boy.getX())
-    Mob_Tuttle.set_movingX(boy.getX())
+    for i in Moblist:
+        i.set_movingX(boy.getX())
+    # Mob_Gomba.set_movingX(boy.getX())
+    # Mob_Tuttle.set_movingX(boy.getX())
     for game_object in game_world.all_objects():
         game_object.update()
     for i in mapTile.Tilelist:
         if i.collision >= 1:
-            for j in Moblist:
-                if collide(j, i):
-                    if collideUpDown(j, i):
-                        j.get_grabity(True)
-                    j.collideUpDown_false(j, i)
-                    if j.set_grabitycheck == False:
-                        j.get_grabity(False)
+            # for j in Moblist:
+                # if collide(j, i):
+                #     if collide_only_all(j, i) == 'bottom':
+                #         j.get_grabity(True)
+                    #         block = i
+                    # if collide(j, block) == False:
+                    #     j.get_grabity(False)
+
+                    # if collideUpDown(j, i):
+                    #     j.get_grabity(True)
+                    # j.collideUpDown_false(j, i)
+                    # if j.set_grabitycheck == False:
+                    #     j.get_grabity(False)
             if collide(boy, i):
                 if collide_only_all(boy, i) == "left":
                     print("left")
@@ -298,6 +326,7 @@ def update():
                 print('불맞음')
                 j.booldeath = True
                 game_world.remove_object(k)
+        bool_grabity = False
         for i in mapTile.Tilelist:
             if i.collision >= 1:
                 if collide(j, i):
@@ -305,6 +334,19 @@ def update():
                         j.change_velocity(True, 'left')
                     elif collide_only_all(j, i) == 'right':
                         j.change_velocity(True, 'right')
+                    if collide_only_all(j, i) == 'bottom':
+                        bool_grabity = True
+        if bool_grabity:
+            j.get_grabity(True)
+        else:
+            j.get_grabity(False)
+
+
+
+    if boy.bgoal == False:
+        if collide(boy, destination):
+            boy.get_bool_goal(True)
+
 
     bool_all_tile = False
 

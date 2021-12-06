@@ -10,11 +10,11 @@ FRAMES_PER_ACTION = 2
 
 
 class Gomba():
-    def __init__(self):
-        self.x, self.y = 900, 200
+    def __init__(self,x ,y, z):
+        self.x, self.y = x, y
         self.image = load_image('res\Mob\gomba_1.png')
         self.dir = -1
-        self.velocity = -1
+        self.velocity = z
         self.frame = 0
         self.MovingX = 0
         self.grabity = False
@@ -80,12 +80,12 @@ class Gomba():
 
 class Turtle():
     image = []
-    def __init__(self):
+    def __init__(self,x ,y, z):
         global image
-        self.x, self.y = 1600, 200
+        self.x, self.y = x, y
         self.image = load_image('res\Mob\Turtle_0.png')
         self.dir = -1
-        self.velocity = -1
+        self.velocity = z
         self.frame = 0
         self.MovingX = 0
         self.grabity = False
