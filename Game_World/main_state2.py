@@ -20,8 +20,6 @@ import ready_state
 import gameover_state
 from goal import *
 
-
-
 name = "MainState"
 
 Moblist = list()
@@ -38,11 +36,13 @@ bool_grabity = False
 bool_all_tile = False
 bool_all_tile2 = False
 bool_jumpdown = True
+
+
 # mapTile = MapTile()
 # boy = Boy()
 
 def collide(a, b):
-    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
 
     if left_a > right_b: return False
@@ -51,54 +51,70 @@ def collide(a, b):
     if bottom_a > top_b: return False
     return True
 
+
 def collideUpDown(a, b):
-    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
     if left_b < left_a < right_b or left_b < right_a < right_b:
         if bottom_a < top_b:
             return True
-        else: return False
-    else: return False
+        else:
+            return False
+    else:
+        return False
+
 
 def collideUpDown_false(a, b):
     global bool_all_tile
-    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
     if left_b < left_a < right_b or left_b < right_a < right_b:
         if bottom_a < top_b:
             bool_all_tile = True
-        else: bool_all_tile = bool_all_tile or False
-    else: bool_all_tile = bool_all_tile or False
+        else:
+            bool_all_tile = bool_all_tile or False
+    else:
+        bool_all_tile = bool_all_tile or False
+
 
 def collidejump(a, b):
-    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
     if left_b < left_a < right_b or left_b < right_a < right_b:
         if top_a > bottom_b:
             return True
-        else: return False
-    else: return False
+        else:
+            return False
+    else:
+        return False
+
 
 def collide_left(a, b):
-    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
     if bottom_b < top_a < top_b or bottom_b < bottom_b < top_b:
         if right_a > left_b:
             return True
-        else: return False
-    else: return False
+        else:
+            return False
+    else:
+        return False
+
 
 def collide_leftright(a, b):
-    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
-    if bottom_b < top_a < top_b or bottom_b < bottom_a< top_b:
-        if left_b < right_a < right_b or left_b < left_a < right_b :
+    if bottom_b < top_a < top_b or bottom_b < bottom_a < top_b:
+        if left_b < right_a < right_b or left_b < left_a < right_b:
             return True
-        else: return False
-    else: return False
+        else:
+            return False
+    else:
+        return False
+
 
 def collide_all(a, b):
-    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
     if left_b < right_a < right_b:
         return 1
@@ -111,7 +127,7 @@ def collide_all(a, b):
 
 
 def collide_only_all(a, b):
-    left_a , bottom_a, right_a, top_a = a.get_bb()
+    left_a, bottom_a, right_a, top_a = a.get_bb()
     left_b, bottom_b, right_b, top_b = b.get_bb()
     if bottom_b <= top_a <= (top_b + bottom_b) / 2:
         if left_b <= left_a <= right_b:
@@ -121,7 +137,7 @@ def collide_only_all(a, b):
         if left_b >= left_a and right_a >= right_b:
             return 'top'
 
-    if (top_b + bottom_b) / 2 <= bottom_a <= top_b :
+    if (top_b + bottom_b) / 2 <= bottom_a <= top_b:
         if left_b <= left_a <= right_b:
             return 'bottom'
         if left_b <= right_a <= right_b:
@@ -139,7 +155,7 @@ def collide_only_all(a, b):
         if bottom_a <= bottom_b <= bottom_b:
             return 'left'
 
-    if left_b  <= right_a <= (left_b + right_b) / 2:
+    if left_b <= right_a <= (left_b + right_b) / 2:
         if bottom_b <= top_a <= top_b:
             return 'right'
         if bottom_b <= bottom_a <= top_b:
@@ -155,14 +171,15 @@ def enter():
     global mapTile
     global Moblist, Mob_Gomba, Mob_Tuttle, destination
     boy = Boy()
+    boy.MovingX = 0
     # grass = Grass()
-    mapTile = MapTile('map1.py')
+    mapTile = MapTile('map2.py')
     Mob_Gomba = Gomba(800, 500, 0)
     Mob_Tuttle = Turtle(1500, 500, 0)
-    Moblist.append(Mob_Gomba)
-    Moblist.append(Gomba(1200, 500, 0))
-    Moblist.append(Gomba(1400, 500, 0))
-    Moblist.append(Gomba(2700, 800 ))
+    # Moblist.append(Mob_Gomba)
+    # Moblist.append(Gomba(1200, 500, 0))
+    # Moblist.append(Gomba(1400, 500, 0))
+    Moblist.append(Gomba(2700, 800))
     Moblist.append(Gomba(2400, 1500))
     Moblist.append(Gomba(1700, 500))
     Moblist.append(Gomba(3400, 2500))
@@ -184,8 +201,6 @@ def enter():
     boy.get_maxtile(mapTile.maxtile_x)
 
 
-
-
 def exit():
     global boy, mapTile, Moblist, itemlist, itemlist_Flower
     # del boy
@@ -193,9 +208,11 @@ def exit():
     Moblist.clear()
     itemlist.clear()
     itemlist_Flower.clear()
+
     # for i in Moblist:
     #     Moblist.remove(i)
     game_world.clear()
+
 
 def pause():
     pass
@@ -211,7 +228,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-                game_framework.quit()
+            game_framework.quit()
         else:
             if boy.cur_state == DeathState or boy.cur_state == GoalState:
                 pass
@@ -260,16 +277,16 @@ def update():
                             if boy.boolbig == True or boy.boolFlower == True:
                                 mapTile.remove(i)
                         if i.collision == 2:
-                            i.collision = 1 #수정 해야함
+                            i.collision = 1  # 수정 해야함
                             i.type += 1
-                            item_mushroom = Mushroom(i.x+30, i.y+30)
+                            item_mushroom = Mushroom(i.x + 30, i.y + 30)
                             item_mushroom.MovingX = boy.getX()
                             itemlist.append(item_mushroom)
                             game_world.add_object(item_mushroom, 3)
                         if i.collision == 3:
                             i.collision = 1
                             i.type += 1
-                            item_Flower = Flower(i.x+30, i.y+30)
+                            item_Flower = Flower(i.x + 30, i.y + 30)
                             item_Flower.MovingX = boy.getX()
                             itemlist_Flower.append(item_Flower)
                             game_world.add_object(item_Flower, 3)
@@ -331,12 +348,9 @@ def update():
         else:
             j.get_grabity(False)
 
-
-
     if boy.bgoal == False:
         if collide(boy, destination):
             boy.get_bool_goal(True)
-
 
     bool_all_tile = False
 
@@ -350,7 +364,6 @@ def update():
     if boy.next_stage:
         game_framework.change_state(ready_state)
         server.roundnumber_state += 1
-
 
 
 def draw():

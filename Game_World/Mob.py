@@ -10,7 +10,7 @@ FRAMES_PER_ACTION = 2
 
 
 class Gomba():
-    def __init__(self,x ,y, z):
+    def __init__(self,x ,y, z = 0):
         self.x, self.y = x, y
         self.image = load_image('res\Mob\gomba_1.png')
         self.dir = -1
@@ -22,6 +22,7 @@ class Gomba():
         self.booldeath = False
         self.deathtime = 0
         self.time = time.time()
+        self.bool_set = True
 
     def update(self):
         self.x += 0.3 * self.velocity
@@ -53,6 +54,11 @@ class Gomba():
         life_time = time.time()
         return life_time - self.time
 
+    def set_velocity(self, check):
+        if self.bool_set:
+            self.velocity = check
+            self.bool_set = False
+
     def change_velocity(self, bool, str):
         if bool:
             self.velocity *= -1
@@ -80,7 +86,7 @@ class Gomba():
 
 class Turtle():
     image = []
-    def __init__(self,x ,y, z):
+    def __init__(self,x ,y, z = 0):
         global image
         self.x, self.y = x, y
         self.image = load_image('res\Mob\Turtle_0.png')
@@ -92,6 +98,7 @@ class Turtle():
         self.grabity_check = False
         self.booldeath = False
         self.deathtime = 0
+        self.bool_set = True
         for i in range(2):
             Turtle.image.append(load_image('res\Mob\Turtle_%d.png' % i))
     def update(self):
@@ -123,6 +130,11 @@ class Turtle():
 
     def set_grabitycheck(self):
         return self.grabity_check
+
+    def set_velocity(self, check):
+        if self.bool_set:
+            self.velocity = check
+            self.bool_set = False
 
     def change_velocity(self, bool, str):
         if bool:

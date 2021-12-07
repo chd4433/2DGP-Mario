@@ -1,6 +1,7 @@
 import game_framework
 from pico2d import *
 import main_state
+import main_state2
 import server
 
 name = "ReadyState"
@@ -48,7 +49,10 @@ def update():
     if (logo_time > 1.0):
         logo_time = 0
         # game_framework.quit()
-        game_framework.change_state(main_state)
+        if server.roundnumber_state == 1:
+            game_framework.change_state(main_state)
+        elif server.roundnumber_state == 2:
+            game_framework.change_state(main_state2)
     delay(0.01)
     logo_time += 0.01
 

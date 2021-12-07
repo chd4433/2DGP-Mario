@@ -23,6 +23,8 @@ DOWN_SPEED_MPPS = 9.8 * 2
 DOWN_SPEED_PPPS = DOWN_SPEED_MPPS * PIXEL_PER_METER
 DOWN_SPEED_MPS = 0
 
+JUMP_SPEED_PPS = 40.0 * 1000.0 / 60.0 / 60.0 * PIXEL_PER_METER
+
 
 
 TIME_PER_ACTION = 0.5
@@ -74,7 +76,8 @@ class GoalState:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         boy.timer -= 1
         if boy.y >= 125:
-            boy.y -= 2
+            boy.grabity_speed += DOWN_SPEED_PPPS * game_framework.frame_time
+            boy.y -= boy.grabity_speed * game_framework.frame_time
         else:
             if boy.bool_leftmove == False and boy.bool_rightmove == False:
                 if boy.MovingX < 0 and boy.x <= 400:
@@ -91,6 +94,7 @@ class GoalState:
                     boy.MovingX += boy.velocity * game_framework.frame_time
         if past_MovingX + 435 + past_boyX <= boy.MovingX + boy.x:
             boy.velocity = 0
+            boy.next_stage = True
 
     def draw(boy):
         if int(boy.frame) == 0:
@@ -140,7 +144,7 @@ class DeathState:
         boy.timer -= 1
         if boy.invincibility:
             boy.timer2 -= 1
-            if boy.timer2 <= 700:
+            if boy.timer2 <= 900:
                 boy.timer2 = 1000
                 boy.invincibility = False
 
@@ -194,10 +198,12 @@ class IdleState:
             boy.grabity_speed = 0
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+        if boy.boolFlower:
+            boy.add_event(TRANS_FIRE)
         if boy.invincibility:
             boy.timer2 -= 1
             boy.add_event(DEATH)
-            if boy.timer2 <= 700:
+            if boy.timer2 <= 900:
                 boy.timer2 = 1000
                 boy.invincibility = False
         if boy.bgoal:
@@ -264,12 +270,14 @@ class WalkState:
             boy.grabity_speed = 0
         if boy.timer <= 750:
             boy.add_event(DASH_TIMER)
+        if boy.boolFlower:
+            boy.add_event(TRANS_FIRE)
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
         if boy.invincibility:
             boy.timer2 -= 1
             boy.add_event(DEATH)
-            if boy.timer2 <= 700:
+            if boy.timer2 <= 900:
                 boy.timer2 = 1000
                 boy.invincibility = False
 
@@ -326,10 +334,12 @@ class RunState:
                 boy.MovingX += 2 * boy.velocity * game_framework.frame_time
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+        if boy.boolFlower:
+            boy.add_event(TRANS_FIRE)
         if boy.invincibility:
             boy.timer2 -= 1
             boy.add_event(DEATH)
-            if boy.timer2 <= 700:
+            if boy.timer2 <= 900:
                 boy.timer2 = 1000
                 boy.invincibility = False
                 # boy.add_event(DEATH)
@@ -392,8 +402,8 @@ class JumpState:
         elif boy.x == 400:
             boy.MovingX += boy.velocity * game_framework.frame_time
 
-        if boy.timer >= 850 and boy.booljump == False :
-            boy.y += 2.5
+        if boy.timer >= 900 and boy.booljump == False:
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
@@ -410,11 +420,13 @@ class JumpState:
                     boy.add_event(JUMP_TIMER1)
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+        if boy.boolFlower:
+            boy.add_event(TRANS_FIRE)
 
         if boy.invincibility:
             boy.timer2 -= 1
             boy.add_event(DEATH)
-            if boy.timer2 <= 700:
+            if boy.timer2 <= 900:
                 boy.timer2 = 1000
                 boy.invincibility = False
                 # boy.add_event(DEATH)
@@ -475,22 +487,24 @@ class IdleState_Big:
             boy.add_event(TRANS_FIRE)
 
         if boy.invincibility:
-            boy.timer2 -= 1
-            if boy.timer2 <= 700:
-                boy.timer2 = 1000
+            boy.invin_timer -= 1
+            boy.sizey -= 0.3
+            if boy.invin_timer <= 900:
+                boy.invin_timer = 1000
                 boy.invincibility = False
                 boy.add_event(TRANS_SMALL)
                 boy.boolbig = False
+                boy.sizey = 120
 
         if boy.bgoal:
             boy.add_event(GOAL)
     def draw(boy):
         if boy.dir == 1:
             boy.image = idle[2]
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y - (120 - boy.sizey), 120, boy.sizey)
         else:
             boy.image = idle[3]
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y - (120 - boy.sizey), 120, boy.sizey)
 
 
 class WalkState_Big:
@@ -545,12 +559,14 @@ class WalkState_Big:
             boy.add_event(TRANS_FIRE)
 
         if boy.invincibility:
-            boy.timer2 -= 1
-            if boy.timer2 <= 700:
-                boy.timer2 = 1000
+            boy.invin_timer -= 1
+            boy.sizey -= 0.3
+            if boy.invin_timer <= 900:
+                boy.invin_timer = 1000
                 boy.invincibility = False
                 boy.add_event(TRANS_SMALL)
                 boy.boolbig = False
+                boy.sizey = 120
         if boy.bgoal:
             boy.add_event(GOAL)
 
@@ -563,7 +579,7 @@ class WalkState_Big:
                 boy.image = walk[5]
             elif int(boy.frame) == 2:
                 boy.image = walk[6]
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y - (120 - boy.sizey), 120, boy.sizey)
         else:
             if int(boy.frame) == 0:
                 boy.image = walk[7]
@@ -571,7 +587,7 @@ class WalkState_Big:
                 boy.image = walk[8]
             elif int(boy.frame) == 3:
                 boy.image = walk[9]
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y - (120 - boy.sizey), 120, boy.sizey)
 
 class RunState_Big:
 
@@ -615,12 +631,14 @@ class RunState_Big:
         boy.x = clamp(25, boy.x, 800- 25)
 
         if boy.invincibility:
-            boy.timer2 -= 1
-            if boy.timer2 <= 700:
-                boy.timer2 = 1000
+            boy.invin_timer -= 1
+            boy.sizey -= 0.3
+            if boy.invin_timer <= 900:
+                boy.invin_timer = 1000
                 boy.invincibility = False
                 boy.add_event(TRANS_SMALL)
                 boy.boolbig = False
+                boy.sizey = 120
         if boy.bgoal:
             boy.add_event(GOAL)
 
@@ -632,7 +650,7 @@ class RunState_Big:
                 boy.image = run[5]
             elif int(boy.frame) == 2:
                 boy.image = run[6]
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y - (120 - boy.sizey), 120, boy.sizey)
         else:
             if int(boy.frame) == 0:
                 boy.image = run[7]
@@ -640,7 +658,7 @@ class RunState_Big:
                 boy.image = run[8]
             elif int(boy.frame) == 2:
                 boy.image = run[9]
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y - (120 - boy.sizey), 120, boy.sizey)
 
 
 class JumpState_Big:
@@ -680,8 +698,8 @@ class JumpState_Big:
         elif boy.x == 400:
             boy.MovingX += boy.velocity * game_framework.frame_time
 
-        if boy.timer >= 850 and boy.booljump == False:
-            boy.y += 2.5
+        if boy.timer >= 900 and boy.booljump == False:
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
@@ -700,12 +718,14 @@ class JumpState_Big:
             boy.add_event(TRANS_FIRE)
 
         if boy.invincibility:
-            boy.timer2 -= 1
-            if boy.timer2 <= 700:
-                boy.timer2 = 1000
+            boy.invin_timer -= 1
+            boy.sizey -= 0.3
+            if boy.invin_timer <= 900:
+                boy.invin_timer = 1000
                 boy.invincibility = False
                 boy.add_event(TRANS_SMALL)
                 boy.boolbig = False
+                boy.sizey = 120
 
         if boy.bgoal:
             boy.add_event(GOAL)
@@ -721,13 +741,13 @@ class JumpState_Big:
                 boy.image = jump[4]
             elif int(boy.frame) == 1:
                 boy.image = jump[5]
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y - (120 - boy.sizey), 120, boy.sizey)
         else:
             if int(boy.frame) == 0:
                 boy.image = jump[6]
             elif int(boy.frame) == 1:
                 boy.image = jump[7]
-            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
+            boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y - (120 - boy.sizey), 120, boy.sizey)
 
 
 class IdleState_Flower:
@@ -759,11 +779,10 @@ class IdleState_Flower:
                 boy.add_event(DEATH)
         else:
             boy.grabity_speed = 0
-
         if boy.invincibility:
-            boy.timer2 -= 1
-            if boy.timer2 <= 700:
-                boy.timer2 = 1000
+            boy.invin_timer -= 1
+            if boy.invin_timer <= 900:
+                boy.invin_timer = 1000
                 boy.invincibility = False
                 boy.add_event(TRANS_BIG)
                 boy.boolFlower = False
@@ -826,10 +845,12 @@ class WalkState_Flower:
             boy.grabity_speed = 0
         if boy.timer <= 750:
             boy.add_event(DASH_TIMER)
+
+
         if boy.invincibility:
-            boy.timer2 -= 1
-            if boy.timer2 <= 700:
-                boy.timer2 = 1000
+            boy.invin_timer -= 1
+            if boy.invin_timer <= 900:
+                boy.invin_timer = 1000
                 boy.invincibility = False
                 boy.add_event(TRANS_BIG)
                 boy.boolFlower = False
@@ -899,9 +920,9 @@ class RunState_Flower:
             boy.add_event(GOAL)
 
         if boy.invincibility:
-            boy.timer2 -= 1
-            if boy.timer2 <= 700:
-                boy.timer2 = 1000
+            boy.invin_timer -= 1
+            if boy.invin_timer <= 900:
+                boy.invin_timer = 1000
                 boy.invincibility = False
                 boy.add_event(TRANS_BIG)
                 boy.boolFlower = False
@@ -962,8 +983,8 @@ class JumpState_Flower:
         elif boy.x == 400:
             boy.MovingX += boy.velocity * game_framework.frame_time
 
-        if boy.timer >= 850 and boy.booljump == False:
-            boy.y += 2.5
+        if boy.timer >= 900 and boy.booljump == False:
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
@@ -980,9 +1001,9 @@ class JumpState_Flower:
                     boy.add_event(JUMP_TIMER1)
 
         if boy.invincibility:
-            boy.timer2 -= 1
-            if boy.timer2 <= 700:
-                boy.timer2 = 1000
+            boy.invin_timer -= 1
+            if boy.invin_timer <= 900:
+                boy.invin_timer = 1000
                 boy.invincibility = False
                 boy.add_event(TRANS_BIG)
                 boy.boolFlower = False
@@ -1009,19 +1030,22 @@ class JumpState_Flower:
             boy.image.clip_draw(0, 0, 32, 32, boy.x, boy.y, 120, 120)
 
 next_state_table = {
-    RunState: {SHIFT_UP: WalkState, DASH_TIMER:WalkState, RIGHT_DOWN: IdleState, LEFT_DOWN:IdleState, RIGHT_UP:IdleState, LEFT_UP:IdleState, SPACE:JumpState, TRANS_BIG: RunState_Big, DEATH: DeathState, SHIFT_DOWN: RunState, GOAL: GoalState},
-    IdleState: {RIGHT_UP: WalkState, LEFT_UP: WalkState, RIGHT_DOWN: WalkState, LEFT_DOWN: WalkState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, FIRE_KEY: IdleState, SPACE:JumpState, TRANS_BIG: IdleState_Big, DEATH: DeathState, JUMP_TIMER1:IdleState, GOAL: GoalState},
-    WalkState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
+    RunState: {SHIFT_UP: WalkState, DASH_TIMER:WalkState, RIGHT_DOWN: IdleState, LEFT_DOWN:IdleState, RIGHT_UP:IdleState, FIRE_KEY: RunState,
+               LEFT_UP:IdleState, SPACE:JumpState, TRANS_BIG: RunState_Big, DEATH: DeathState, SHIFT_DOWN: RunState, GOAL: GoalState, TRANS_FIRE: RunState_Flower},
+    IdleState: {RIGHT_UP: WalkState, LEFT_UP: WalkState, RIGHT_DOWN: WalkState, LEFT_DOWN: WalkState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, TRANS_FIRE: IdleState_Flower,
+                FIRE_KEY: IdleState, SPACE:JumpState, TRANS_BIG: IdleState_Big, DEATH: DeathState, JUMP_TIMER1:IdleState, GOAL: GoalState},
+    WalkState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState, TRANS_FIRE:WalkState_Flower, JUMP_TIMER2:WalkState,
                SHIFT_DOWN:RunState, SHIFT_UP: WalkState, FIRE_KEY: WalkState, DASH_TIMER: RunState, SPACE:JumpState, TRANS_BIG:WalkState_Big, DEATH: DeathState, GOAL: GoalState},
-    JumpState: {JUMP_TIMER1: WalkState, JUMP_TIMER2: IdleState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, LEFT_DOWN:JumpState, SPACE:JumpState, TRANS_BIG:IdleState_Big, DEATH: DeathState, SHIFT_UP: JumpState , SHIFT_DOWN: JumpState, GOAL: GoalState },
+    JumpState: {JUMP_TIMER1: WalkState, JUMP_TIMER2: IdleState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, TRANS_FIRE:JumpState_Flower,
+                LEFT_DOWN:JumpState, SPACE:JumpState, TRANS_BIG:IdleState_Big, DEATH: DeathState, SHIFT_UP: JumpState , SHIFT_DOWN: JumpState, GOAL: GoalState , FIRE_KEY: JumpState},
 
-    RunState_Big: {SHIFT_UP: WalkState_Big, DASH_TIMER:WalkState_Big, RIGHT_DOWN: IdleState_Big, LEFT_DOWN:IdleState_Big, RIGHT_UP:IdleState_Big, LEFT_UP:IdleState_Big,
+    RunState_Big: {SHIFT_UP: WalkState_Big, DASH_TIMER:WalkState_Big, RIGHT_DOWN: IdleState_Big, LEFT_DOWN:IdleState_Big, RIGHT_UP:IdleState_Big, LEFT_UP:IdleState_Big, FIRE_KEY:RunState_Big,
                    SPACE:JumpState_Big ,TRANS_FIRE:RunState_Flower, TRANS_SMALL:RunState, SHIFT_DOWN: RunState_Big, DEATH: DeathState, GOAL: GoalState},
     IdleState_Big: {RIGHT_UP: WalkState_Big, LEFT_UP: WalkState_Big, RIGHT_DOWN: WalkState_Big, LEFT_DOWN: WalkState_Big, SHIFT_DOWN: IdleState_Big,
                     SHIFT_UP: IdleState_Big, FIRE_KEY: IdleState_Big, SPACE:JumpState_Big, TRANS_FIRE:IdleState_Flower, TRANS_SMALL:IdleState, DEATH: DeathState, GOAL: GoalState},
-    WalkState_Big: {RIGHT_UP: IdleState_Big, LEFT_UP: IdleState_Big, LEFT_DOWN: IdleState_Big, RIGHT_DOWN: IdleState_Big, DEATH: DeathState,
+    WalkState_Big: {RIGHT_UP: IdleState_Big, LEFT_UP: IdleState_Big, LEFT_DOWN: IdleState_Big, RIGHT_DOWN: IdleState_Big, DEATH: DeathState, JUMP_TIMER2:WalkState_Big,
                SHIFT_DOWN:RunState_Big, SHIFT_UP: WalkState_Big, FIRE_KEY: WalkState_Big, DASH_TIMER: RunState_Big, SPACE:JumpState_Big ,TRANS_FIRE: WalkState_Flower, TRANS_SMALL: WalkState, GOAL: GoalState},
-    JumpState_Big: {JUMP_TIMER1: WalkState_Big, JUMP_TIMER2: IdleState_Big, RIGHT_UP:JumpState_Big, LEFT_UP:JumpState_Big, DEATH: DeathState,
+    JumpState_Big: {JUMP_TIMER1: WalkState_Big, JUMP_TIMER2: IdleState_Big, RIGHT_UP:JumpState_Big, LEFT_UP:JumpState_Big, DEATH: DeathState,FIRE_KEY:JumpState_Big,
                     RIGHT_DOWN: JumpState_Big, LEFT_DOWN:JumpState_Big, SPACE:JumpState_Big, TRANS_FIRE:IdleState_Flower, SHIFT_UP: JumpState_Big, SHIFT_DOWN:JumpState_Big, TRANS_SMALL: JumpState, GOAL: GoalState},
 
     RunState_Flower: {SHIFT_UP: WalkState_Flower, DASH_TIMER: WalkState_Flower, RIGHT_DOWN: IdleState_Flower, DEATH: DeathState, GOAL: GoalState,
@@ -1029,7 +1053,7 @@ next_state_table = {
     IdleState_Flower: {RIGHT_UP: WalkState_Flower, LEFT_UP: WalkState_Flower, RIGHT_DOWN: WalkState_Flower, DEATH: DeathState,
                         LEFT_DOWN: WalkState_Flower, SHIFT_DOWN: IdleState_Flower, SHIFT_UP: IdleState_Flower, GOAL: GoalState,
                          FIRE_KEY: IdleState_Flower, SPACE: JumpState_Flower, TRANS_BIG:IdleState_Big},
-    WalkState_Flower: {RIGHT_UP: IdleState_Flower, LEFT_UP: IdleState_Flower, LEFT_DOWN: IdleState_Flower,
+    WalkState_Flower: {RIGHT_UP: IdleState_Flower, LEFT_UP: IdleState_Flower, LEFT_DOWN: IdleState_Flower, JUMP_TIMER2:WalkState_Flower,
                     RIGHT_DOWN: IdleState_Flower, TRANS_BIG:WalkState_Big, DEATH: DeathState, GOAL: GoalState,
                     SHIFT_DOWN: RunState_Flower, SHIFT_UP: WalkState_Flower, FIRE_KEY: WalkState_Flower,
                      DASH_TIMER: RunState_Flower, SPACE: JumpState_Flower},
@@ -1047,7 +1071,7 @@ class Boy:
     def __init__(self):
         global idle
         self.x, self.y = 800 // 2, 200 #125
-        self.MovingX = 0
+        self.MovingX = 6400
         self.image = load_image('res\idle\idle0.png')
         self.dir = 1
         self.velocity = 0
@@ -1069,6 +1093,10 @@ class Boy:
         self.jumpy = 0
         self.bgoal = False
         self.grabity_speed = 0
+        self.invin_timer = 1000
+        self.sizey = 120
+        self.next_stage = False
+        self.font = load_font('ENCR10B.TTF', 16)
 
         for i in range(6):
             idle.append(load_image('res\idle\idle%d.png' % i))
@@ -1085,7 +1113,7 @@ class Boy:
     def update(self):
 
         self.cur_state.do(self)
-        if self.boolbig:
+        if self.boolbig or self.boolFlower:
             self.plagY = self.y + 60
         else: self.plagY = self.y
         if len(self.event_que) > 0:
@@ -1112,7 +1140,7 @@ class Boy:
         return self.x + self.MovingX - 20, self.y - 60, self.x + self.MovingX + 20, self.y
 
     def get_bb(self):
-        if self.boolbig:
+        if self.boolbig or self.boolFlower:
             return self.x - 20, self.y - 60, self.x + 20, self.y + 60
         else:
             return self.x - 20, self.y - 60, self.x + 20, self.y
@@ -1149,11 +1177,12 @@ class Boy:
                 self.MovingX -= 2 * self.velocity * game_framework.frame_time - 2
 
     def fire_ball(self):
-        ball = Ball(self.x, self.y - 5, self.dir * 2)
+        ball = Ball(self.x, self.y - 5, self.dir * 2, self.MovingX)
         game_world.add_object(ball, 3)
     def draw(self):
         self.cur_state.draw(self)
         debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir))
+        # self.font.draw(0, 780, 'Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir), (255, 255, 0))
         draw_rectangle(*self.get_bb())
         
     def getX(self):

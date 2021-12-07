@@ -5,7 +5,7 @@ import re
 MapWidth, MapHeight = 800, 600
 
 open_canvas(MapWidth, MapHeight)
-FILE_NAME = "map1.py"
+FILE_NAME = "map2.py"
 TEST = "Test.py"
 
 Tilelist = list()
@@ -55,7 +55,7 @@ def hadle_events():
             elif event.key == SDLK_LEFT:
                 MovingX -= 120
             if event.key == SDLK_s:
-                f = open(TEST, 'w')
+                f = open(FILE_NAME, 'w')
                 f.write("from block import Block\n")
                 for i in range(len(Tilelist)):
                     f.write("Block(%d, %d, %d, %d),\n" % (Tilelist[i].x , Tilelist[i].y, Tilelist[i].type, Tilelist[i].collision))
@@ -64,7 +64,7 @@ def hadle_events():
             if event.key == SDLK_x:
                 fill_allBlock()
             if event.key == SDLK_z:
-                Load_Map(TEST)
+                Load_Map(FILE_NAME)
             if event.key == SDLK_v:
                 block_collision += 1
                 if block_collision == 0:

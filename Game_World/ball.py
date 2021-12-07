@@ -10,13 +10,14 @@ FRAMES_PER_ACTION = 2
 class Ball:
     image = None
     imagelist = []
-    def __init__(self, x = 400, y = 300, velocity = 1):
+    def __init__(self, x = 400, y = 300, velocity = 1, movingx = 0):
         if Ball.image == None:
             for i in range(4):
                 Ball.imagelist.append(load_image('res\\fire\\fire%d.png' % i))
             Ball.image = load_image('res\\fire\\fire0.png')
         self.x, self.y, self.velocity = x, y, velocity
         self.MovingX = 0
+        self.first_MovingX = movingx
         self.frame = 0
 
     def draw(self):
@@ -28,17 +29,17 @@ class Ball:
             self.image = Ball.imagelist[2]
         elif int(self.frame) == 3:
             self.image = Ball.imagelist[3]
-        self.image.clip_draw(0, 0, 8, 8, self.x, self.y, 16, 16)
+        self.image.clip_draw(0, 0, 8, 8, self.x - (self.MovingX - self.first_MovingX), self.y, 16, 16)
         draw_rectangle(*self.get_bb())
 
     def update(self):
         self.x += self.velocity
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
-        if self.x < 0 or self.x > 800:
+        if self.x - (self.MovingX - self.first_MovingX) < 0 or self.x - (self.MovingX - self.first_MovingX) > 800:
             game_world.remove_object(self)
 
     def set_movingX(self, X):
         self.MovingX = X
 
     def get_bb(self):
-        return self.x - 8, self.y - 8, self.x + 8, self.y + 8
+        return self.x - 8 - (self.MovingX - self.first_MovingX), self.y - 8, self.x + 8 - (self.MovingX - self.first_MovingX), self.y + 8
