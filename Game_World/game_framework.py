@@ -99,8 +99,8 @@ def run(start_state):
         frame_time = time.time() - current_time
         frame_rate = 1.0 / frame_time
         current_time += frame_time
-        if frame_time >= 60.0:
-            frame_time = 60.0
+        # if frame_time >= 60.0:
+        #     frame_time = 60.0
     # repeatedly delete the top of the stack
     while (len(stack) > 0):
         stack[-1].exit()

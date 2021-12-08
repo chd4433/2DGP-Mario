@@ -163,15 +163,15 @@ def enter():
     Moblist.append(Gomba(1200, 500, 0))
     Moblist.append(Gomba(1400, 500, 0))
     Moblist.append(Gomba(2700, 800 ))
-    Moblist.append(Gomba(2400, 1500))
+    Moblist.append(Gomba(2400, 500))
     Moblist.append(Gomba(1700, 500))
-    Moblist.append(Gomba(3400, 2500))
-    Moblist.append(Gomba(5000, 2500))
-    Moblist.append(Turtle(5000, 2500))
-    Moblist.append(Turtle(4500, 2500))
-    Moblist.append(Turtle(500, 2500))
-    Moblist.append(Turtle(5000, 1500))
-    Moblist.append(Turtle(5000, 2500))
+    Moblist.append(Gomba(3400, 500))
+    Moblist.append(Gomba(5000, 500))
+    Moblist.append(Turtle(5000, 800))
+    Moblist.append(Turtle(4500, 500))
+    Moblist.append(Turtle(500, 500))
+    Moblist.append(Turtle(5000, 800))
+    Moblist.append(Turtle(5000, 800))
     Moblist.append(Mob_Tuttle)
     destination = goal(7200, 310)
     game_world.add_object(mapTile, 0)
@@ -260,6 +260,7 @@ def update():
                             if boy.boolbig == True or boy.boolFlower == True:
                                 mapTile.remove(i)
                         if i.collision == 2:
+                            boy.item_sound.play()
                             i.collision = 1 #수정 해야함
                             i.type += 1
                             item_mushroom = Mushroom(i.x+30, i.y+30)
@@ -267,6 +268,7 @@ def update():
                             itemlist.append(item_mushroom)
                             game_world.add_object(item_mushroom, 3)
                         if i.collision == 3:
+                            boy.item_sound.play()
                             i.collision = 1
                             i.type += 1
                             item_Flower = Flower(i.x+30, i.y+30)
@@ -306,7 +308,9 @@ def update():
                     print('데미지')
                 if collide_only_all(boy, j) == 'bottom':
                     print('밟기')
+                    boy.bool_monster_bully = True
                     j.booldeath = True
+                    boy.kill_sound.play()
         if j.deathtime >= 10:
             Moblist.remove(j)
             game_world.remove_object(j)
@@ -314,6 +318,7 @@ def update():
         for k in game_world.select_object(3):
             if collide(j, k):
                 print('불맞음')
+                boy.kill_sound.play()
                 j.booldeath = True
                 game_world.remove_object(k)
         bool_grabity = False
@@ -350,6 +355,8 @@ def update():
     if boy.next_stage:
         game_framework.change_state(ready_state)
         server.roundnumber_state += 1
+        server.bool_big = boy.boolbig
+        server.bool_Flower = boy.boolFlower
 
 
 

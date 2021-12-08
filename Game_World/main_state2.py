@@ -10,13 +10,14 @@ from boy import Boy
 from grass import Grass
 from boy import DeathState, GoalState
 from MapTile import *
-from Mob import Gomba, Turtle
+from Mob import Gomba, Turtle, Fish
 from item import Mushroom, Flower
 from block import Block
 import collision
 import server
 from ball import Ball
 import ready_state
+import End_state
 import gameover_state
 from goal import *
 
@@ -171,24 +172,29 @@ def enter():
     global mapTile
     global Moblist, Mob_Gomba, Mob_Tuttle, destination
     boy = Boy()
-    boy.MovingX = 0
+    boy.MovingX = 3500
+    boy.boolbig = server.bool_big
+    boy.boolFlower = server.bool_Flower
     # grass = Grass()
     mapTile = MapTile('map2.py')
     Mob_Gomba = Gomba(800, 500, 0)
+    Moblist.append(Fish(3100, 100))
+    Moblist.append(Fish(3200, 100))
+    Moblist.append(Fish(3300, 100))
     Mob_Tuttle = Turtle(1500, 500, 0)
-    # Moblist.append(Mob_Gomba)
-    # Moblist.append(Gomba(1200, 500, 0))
-    # Moblist.append(Gomba(1400, 500, 0))
+    Moblist.append(Mob_Gomba)
+    Moblist.append(Gomba(1200, 500, 0))
+    Moblist.append(Gomba(1400, 500, 0))
     Moblist.append(Gomba(2700, 800))
     Moblist.append(Gomba(2400, 1500))
     Moblist.append(Gomba(1700, 500))
-    Moblist.append(Gomba(3400, 2500))
-    Moblist.append(Gomba(5000, 2500))
-    Moblist.append(Turtle(5000, 2500))
-    Moblist.append(Turtle(4500, 2500))
-    Moblist.append(Turtle(500, 2500))
-    Moblist.append(Turtle(5000, 1500))
-    Moblist.append(Turtle(5000, 2500))
+    Moblist.append(Gomba(3400, 800))
+    Moblist.append(Gomba(5000, 800))
+    Moblist.append(Turtle(5000, 800))
+    Moblist.append(Turtle(4500, 800))
+    Moblist.append(Turtle(500, 1000))
+    Moblist.append(Turtle(5000, 500))
+    Moblist.append(Turtle(5000, 500))
     Moblist.append(Mob_Tuttle)
     destination = goal(7200, 310)
     game_world.add_object(mapTile, 0)
@@ -277,6 +283,7 @@ def update():
                             if boy.boolbig == True or boy.boolFlower == True:
                                 mapTile.remove(i)
                         if i.collision == 2:
+                            boy.item_sound.play()
                             i.collision = 1  # 수정 해야함
                             i.type += 1
                             item_mushroom = Mushroom(i.x + 30, i.y + 30)
@@ -284,6 +291,7 @@ def update():
                             itemlist.append(item_mushroom)
                             game_world.add_object(item_mushroom, 3)
                         if i.collision == 3:
+                            boy.item_sound.play()
                             i.collision = 1
                             i.type += 1
                             item_Flower = Flower(i.x + 30, i.y + 30)
@@ -323,6 +331,8 @@ def update():
                     print('데미지')
                 if collide_only_all(boy, j) == 'bottom':
                     print('밟기')
+                    boy.kill_sound.play()
+                    boy.bool_monster_bully = True
                     j.booldeath = True
         if j.deathtime >= 10:
             Moblist.remove(j)
@@ -331,6 +341,7 @@ def update():
         for k in game_world.select_object(3):
             if collide(j, k):
                 print('불맞음')
+                boy.kill_sound.play()
                 j.booldeath = True
                 game_world.remove_object(k)
         bool_grabity = False
@@ -362,7 +373,7 @@ def update():
             game_framework.change_state(gameover_state)
 
     if boy.next_stage:
-        game_framework.change_state(ready_state)
+        game_framework.change_state(End_state)
         server.roundnumber_state += 1
 
 

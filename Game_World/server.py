@@ -4,3 +4,5 @@ bool_jumpdown = True
 life = 3
 number_state = 1
 roundnumber_state = 1
+bool_big = False
+bool_Flower = False

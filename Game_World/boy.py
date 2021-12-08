@@ -135,6 +135,8 @@ class GoalState:
 class DeathState:
     def enter(boy, event):
         boy.timer = 1000
+        boy.bgm.stop()
+        boy.death_sound.play()
 
     def exit(boy, event):
         pass
@@ -198,8 +200,10 @@ class IdleState:
             boy.grabity_speed = 0
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+            boy.grow_sound.play()
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+            boy.grow_sound.play()
         if boy.invincibility:
             boy.timer2 -= 1
             boy.add_event(DEATH)
@@ -272,8 +276,10 @@ class WalkState:
             boy.add_event(DASH_TIMER)
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+            boy.grow_sound.play()
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+            boy.grow_sound.play()
         if boy.invincibility:
             boy.timer2 -= 1
             boy.add_event(DEATH)
@@ -334,8 +340,10 @@ class RunState:
                 boy.MovingX += 2 * boy.velocity * game_framework.frame_time
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+            boy.grow_sound.play()
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+            boy.grow_sound.play()
         if boy.invincibility:
             boy.timer2 -= 1
             boy.add_event(DEATH)
@@ -377,7 +385,9 @@ class JumpState:
         boy.dir = clamp(-1,boy.velocity, 1)
         boy.runstate = False
         boy.jumpy = boy.y
-
+        if boy.bool_air == False:
+            boy.Jump_sound.play()
+            boy.bool_air = True
 
 
     def exit(boy, event):
@@ -404,6 +414,13 @@ class JumpState:
 
         if boy.timer >= 900 and boy.booljump == False:
             boy.y += JUMP_SPEED_PPS * game_framework.frame_time
+        elif boy.bool_monster_bully and boy.booljump == False:
+            boy.monster_bully_count += 1
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time
+            if boy.monster_bully_count >= 10:
+                boy.monster_bully_count = 0
+                boy.bool_monster_bully = False
+                boy.grabity_speed = 0
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
@@ -414,14 +431,17 @@ class JumpState:
             else:
                 boy.grabity_speed = 0
                 boy.booljump = False
+                boy.bool_air = False
                 if boy.dir == 0:
                     boy.add_event(JUMP_TIMER2)
                 else:
                     boy.add_event(JUMP_TIMER1)
         if boy.boolbig:
             boy.add_event(TRANS_BIG)
+            boy.grow_sound.play()
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+            boy.grow_sound.play()
 
         if boy.invincibility:
             boy.timer2 -= 1
@@ -485,8 +505,11 @@ class IdleState_Big:
             boy.grabity_speed = 0
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+            boy.grow_sound.play()
 
         if boy.invincibility:
+            if boy.invin_timer == 1000:
+                boy.backgrow_sound.play()
             boy.invin_timer -= 1
             boy.sizey -= 0.3
             if boy.invin_timer <= 900:
@@ -557,8 +580,11 @@ class WalkState_Big:
             boy.add_event(DASH_TIMER)
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+            boy.grow_sound.play()
 
         if boy.invincibility:
+            if boy.invin_timer == 1000:
+                boy.backgrow_sound.play()
             boy.invin_timer -= 1
             boy.sizey -= 0.3
             if boy.invin_timer <= 900:
@@ -607,6 +633,7 @@ class RunState_Big:
         # boy.x += boy.velocity
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+            boy.grow_sound.play()
         if boy.grabity == False:
             if boy.y >= -50:
                 boy.grabity_speed += DOWN_SPEED_PPPS * game_framework.frame_time
@@ -631,6 +658,8 @@ class RunState_Big:
         boy.x = clamp(25, boy.x, 800- 25)
 
         if boy.invincibility:
+            if boy.invin_timer == 1000:
+                boy.backgrow_sound.play()
             boy.invin_timer -= 1
             boy.sizey -= 0.3
             if boy.invin_timer <= 900:
@@ -675,6 +704,9 @@ class JumpState_Big:
         boy.dir = clamp(-1,boy.velocity, 1)
         # boy.timer2 = 1000
         boy.runstate = False
+        if boy.bool_air == False:
+            boy.Jump_sound.play()
+            boy.bool_air = True
 
 
     def exit(boy, event):
@@ -700,6 +732,13 @@ class JumpState_Big:
 
         if boy.timer >= 900 and boy.booljump == False:
             boy.y += JUMP_SPEED_PPS * game_framework.frame_time
+        elif boy.bool_monster_bully and boy.booljump == False:
+            boy.monster_bully_count += 1
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time
+            if boy.monster_bully_count >= 10:
+                boy.monster_bully_count = 0
+                boy.bool_monster_bully = False
+                boy.grabity_speed = 0
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
@@ -710,14 +749,18 @@ class JumpState_Big:
             else:
                 boy.grabity_speed = 0
                 boy.booljump = False
+                boy.bool_air = False
                 if boy.dir == 0:
                     boy.add_event(JUMP_TIMER2)
                 else:
                     boy.add_event(JUMP_TIMER1)
         if boy.boolFlower:
             boy.add_event(TRANS_FIRE)
+            boy.grow_sound.play()
 
         if boy.invincibility:
+            if boy.invin_timer == 1000:
+                boy.backgrow_sound.play()
             boy.invin_timer -= 1
             boy.sizey -= 0.3
             if boy.invin_timer <= 900:
@@ -780,6 +823,8 @@ class IdleState_Flower:
         else:
             boy.grabity_speed = 0
         if boy.invincibility:
+            if boy.invin_timer == 1000:
+                boy.backgrow_sound.play()
             boy.invin_timer -= 1
             if boy.invin_timer <= 900:
                 boy.invin_timer = 1000
@@ -848,6 +893,8 @@ class WalkState_Flower:
 
 
         if boy.invincibility:
+            if boy.invin_timer == 1000:
+                boy.backgrow_sound.play()
             boy.invin_timer -= 1
             if boy.invin_timer <= 900:
                 boy.invin_timer = 1000
@@ -920,6 +967,8 @@ class RunState_Flower:
             boy.add_event(GOAL)
 
         if boy.invincibility:
+            if boy.invin_timer == 1000:
+                boy.backgrow_sound.play()
             boy.invin_timer -= 1
             if boy.invin_timer <= 900:
                 boy.invin_timer = 1000
@@ -960,6 +1009,9 @@ class JumpState_Flower:
         boy.dir = clamp(-1,boy.velocity, 1)
         boy.timer2 = 1000
         boy.runstate = False
+        if boy.bool_air == False:
+            boy.Jump_sound.play()
+            boy.bool_air = True
 
 
     def exit(boy, event):
@@ -985,6 +1037,13 @@ class JumpState_Flower:
 
         if boy.timer >= 900 and boy.booljump == False:
             boy.y += JUMP_SPEED_PPS * game_framework.frame_time
+        elif boy.bool_monster_bully and boy.booljump == False:
+            boy.monster_bully_count += 1
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time
+            if boy.monster_bully_count >= 10:
+                boy.monster_bully_count = 0
+                boy.bool_monster_bully = False
+                boy.grabity_speed = 0
         else:
             if boy.grabity == False:
                 if boy.y >= -50:
@@ -995,17 +1054,19 @@ class JumpState_Flower:
             else:
                 boy.grabity_speed = 0
                 boy.booljump = False
+                boy.bool_air = False
                 if boy.dir == 0:
                     boy.add_event(JUMP_TIMER2)
                 else:
                     boy.add_event(JUMP_TIMER1)
 
         if boy.invincibility:
+            if boy.invin_timer == 1000:
+                boy.backgrow_sound.play()
             boy.invin_timer -= 1
             if boy.invin_timer <= 900:
                 boy.invin_timer = 1000
                 boy.invincibility = False
-                boy.add_event(TRANS_BIG)
                 boy.boolFlower = False
 
         if boy.bgoal:
@@ -1034,14 +1095,14 @@ next_state_table = {
                LEFT_UP:IdleState, SPACE:JumpState, TRANS_BIG: RunState_Big, DEATH: DeathState, SHIFT_DOWN: RunState, GOAL: GoalState, TRANS_FIRE: RunState_Flower},
     IdleState: {RIGHT_UP: WalkState, LEFT_UP: WalkState, RIGHT_DOWN: WalkState, LEFT_DOWN: WalkState, SHIFT_DOWN: IdleState, SHIFT_UP: IdleState, TRANS_FIRE: IdleState_Flower,
                 FIRE_KEY: IdleState, SPACE:JumpState, TRANS_BIG: IdleState_Big, DEATH: DeathState, JUMP_TIMER1:IdleState, GOAL: GoalState},
-    WalkState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState, TRANS_FIRE:WalkState_Flower, JUMP_TIMER2:WalkState,
+    WalkState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState, TRANS_FIRE:WalkState_Flower, JUMP_TIMER2:WalkState, JUMP_TIMER1:WalkState,
                SHIFT_DOWN:RunState, SHIFT_UP: WalkState, FIRE_KEY: WalkState, DASH_TIMER: RunState, SPACE:JumpState, TRANS_BIG:WalkState_Big, DEATH: DeathState, GOAL: GoalState},
     JumpState: {JUMP_TIMER1: WalkState, JUMP_TIMER2: IdleState, RIGHT_UP:JumpState, LEFT_UP:JumpState, RIGHT_DOWN: JumpState, TRANS_FIRE:JumpState_Flower,
                 LEFT_DOWN:JumpState, SPACE:JumpState, TRANS_BIG:IdleState_Big, DEATH: DeathState, SHIFT_UP: JumpState , SHIFT_DOWN: JumpState, GOAL: GoalState , FIRE_KEY: JumpState},
 
     RunState_Big: {SHIFT_UP: WalkState_Big, DASH_TIMER:WalkState_Big, RIGHT_DOWN: IdleState_Big, LEFT_DOWN:IdleState_Big, RIGHT_UP:IdleState_Big, LEFT_UP:IdleState_Big, FIRE_KEY:RunState_Big,
                    SPACE:JumpState_Big ,TRANS_FIRE:RunState_Flower, TRANS_SMALL:RunState, SHIFT_DOWN: RunState_Big, DEATH: DeathState, GOAL: GoalState},
-    IdleState_Big: {RIGHT_UP: WalkState_Big, LEFT_UP: WalkState_Big, RIGHT_DOWN: WalkState_Big, LEFT_DOWN: WalkState_Big, SHIFT_DOWN: IdleState_Big,
+    IdleState_Big: {RIGHT_UP: WalkState_Big, LEFT_UP: WalkState_Big, RIGHT_DOWN: WalkState_Big, LEFT_DOWN: WalkState_Big, SHIFT_DOWN: IdleState_Big, TRANS_BIG:IdleState_Big,
                     SHIFT_UP: IdleState_Big, FIRE_KEY: IdleState_Big, SPACE:JumpState_Big, TRANS_FIRE:IdleState_Flower, TRANS_SMALL:IdleState, DEATH: DeathState, GOAL: GoalState},
     WalkState_Big: {RIGHT_UP: IdleState_Big, LEFT_UP: IdleState_Big, LEFT_DOWN: IdleState_Big, RIGHT_DOWN: IdleState_Big, DEATH: DeathState, JUMP_TIMER2:WalkState_Big,
                SHIFT_DOWN:RunState_Big, SHIFT_UP: WalkState_Big, FIRE_KEY: WalkState_Big, DASH_TIMER: RunState_Big, SPACE:JumpState_Big ,TRANS_FIRE: WalkState_Flower, TRANS_SMALL: WalkState, GOAL: GoalState},
@@ -1096,7 +1157,31 @@ class Boy:
         self.invin_timer = 1000
         self.sizey = 120
         self.next_stage = False
+        self.bool_air = False
         self.font = load_font('ENCR10B.TTF', 16)
+        self.bool_monster_bully = False
+        self.monster_bully_count = 0
+        self.bgm = load_music('res\sound\Super Mario Bross.mp3')
+        self.bgm.set_volume(32)
+        self.bgm.repeat_play()
+        self.Jump_sound = load_wav('res\sound\Jump.wav')
+        self.Jump_sound.set_volume(32)
+        self.item_sound = load_wav('res\sound\Itemsprouting.wav')
+        self.item_sound.set_volume(32)
+        self.grow_sound = load_wav('res\sound\Power up.wav')
+        self.grow_sound.set_volume(32)
+        self.backgrow_sound = load_wav('res\sound\Power up.wav')
+        self.backgrow_sound.set_volume(32)
+        self.kill_sound = load_wav('res\sound\kill_mob.wav')
+        self.kill_sound.set_volume(32)
+        self.fire_sound = load_wav('res\sound\Throwing fireball.wav')
+        self.fire_sound.set_volume(32)
+        self.death_sound = load_wav('res\sound\Mario dies.wav')
+        self.death_sound.set_volume(32)
+        # self.clear_sound = load_music('res\sound\clear.mp3')
+        # self.clear_sound.set_volume(32)
+
+
 
         for i in range(6):
             idle.append(load_image('res\idle\idle%d.png' % i))
@@ -1178,12 +1263,14 @@ class Boy:
 
     def fire_ball(self):
         ball = Ball(self.x, self.y - 5, self.dir * 2, self.MovingX)
+        self.fire_sound.play()
         game_world.add_object(ball, 3)
     def draw(self):
         self.cur_state.draw(self)
-        debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir))
-        # self.font.draw(0, 780, 'Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir), (255, 255, 0))
+        # debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir) + ' MovingX:' + str(self.MovingX))
+        self.font.draw(0, 780, 'Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir), (255, 255, 0))
         draw_rectangle(*self.get_bb())
+        # print('MovingX:', self.MovingX)
         
     def getX(self):
         return self.MovingX

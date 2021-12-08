@@ -33,7 +33,7 @@ class Ball:
         draw_rectangle(*self.get_bb())
 
     def update(self):
-        self.x += self.velocity
+        self.x += 2 * self.velocity
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
         if self.x - (self.MovingX - self.first_MovingX) < 0 or self.x - (self.MovingX - self.first_MovingX) > 800:
             game_world.remove_object(self)
