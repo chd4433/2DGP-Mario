@@ -15,6 +15,7 @@ from item import Mushroom, Flower
 from block import Block
 import collision
 import server
+import End_state
 from ball import Ball
 import ready_state
 import gameover_state
@@ -156,11 +157,13 @@ def enter():
     global Moblist, Mob_Gomba, Mob_Tuttle, destination
     boy = Boy()
     # grass = Grass()
+    boy.boolbig = server.bool_big
+    boy.boolFlower = server.bool_Flower
     mapTile = MapTile('map1.py')
     Mob_Gomba = Gomba(800, 500, 0)
     Mob_Tuttle = Turtle(1500, 500, 0)
     Moblist.append(Mob_Gomba)
-    Moblist.append(Gomba(1200, 500, 0))
+    Moblist.append(Gomba(1600, 500, 0))
     Moblist.append(Gomba(1400, 500, 0))
     Moblist.append(Gomba(2700, 800 ))
     Moblist.append(Gomba(2400, 500))
@@ -212,6 +215,8 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.quit()
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_l:
+            boy.MovingX += 800
         else:
             if boy.cur_state == DeathState or boy.cur_state == GoalState:
                 pass
@@ -351,12 +356,9 @@ def update():
             game_framework.change_state(ready_state)
         else:
             game_framework.change_state(gameover_state)
-
     if boy.next_stage:
-        game_framework.change_state(ready_state)
+        game_framework.change_state(End_state)
         server.roundnumber_state += 1
-        server.bool_big = boy.boolbig
-        server.bool_Flower = boy.boolFlower
 
 
 

@@ -27,7 +27,7 @@ class Gomba():
     def update(self):
         self.x += 0.3 * self.velocity
         if self.grabity == False:
-            self.y -= 0.5;
+            self.y -= 1;
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         if self.frame >= 2:
             self.frame = 0
@@ -104,7 +104,7 @@ class Turtle():
     def update(self):
         self.x += 0.3 * self.velocity
         if self.grabity == False:
-            self.y -= 0.5;
+            self.y -= 1;
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 2
         if self.frame >= 2:
             self.frame = 0

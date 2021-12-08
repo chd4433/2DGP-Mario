@@ -172,7 +172,7 @@ def enter():
     global mapTile
     global Moblist, Mob_Gomba, Mob_Tuttle, destination
     boy = Boy()
-    boy.MovingX = 3500
+    boy.MovingX = 2000
     boy.boolbig = server.bool_big
     boy.boolFlower = server.bool_Flower
     # grass = Grass()
@@ -186,15 +186,16 @@ def enter():
     Moblist.append(Gomba(1200, 500, 0))
     Moblist.append(Gomba(1400, 500, 0))
     Moblist.append(Gomba(2700, 800))
+    Moblist.append(Turtle(2600, 500))
     Moblist.append(Gomba(2400, 1500))
     Moblist.append(Gomba(1700, 500))
-    Moblist.append(Gomba(3400, 800))
-    Moblist.append(Gomba(5000, 800))
-    Moblist.append(Turtle(5000, 800))
-    Moblist.append(Turtle(4500, 800))
+    Moblist.append(Gomba(5400, 400))
+    Moblist.append(Gomba(5000, 400))
+    Moblist.append(Turtle(5500, 400))
+    Moblist.append(Turtle(4500, 400))
     Moblist.append(Turtle(500, 1000))
-    Moblist.append(Turtle(5000, 500))
-    Moblist.append(Turtle(5000, 500))
+    Moblist.append(Turtle(4600, 500))
+    Moblist.append(Turtle(6000, 500))
     Moblist.append(Mob_Tuttle)
     destination = goal(7200, 310)
     game_world.add_object(mapTile, 0)
@@ -235,6 +236,8 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_l:
+            boy.MovingX += 1000
         else:
             if boy.cur_state == DeathState or boy.cur_state == GoalState:
                 pass
@@ -284,7 +287,7 @@ def update():
                                 mapTile.remove(i)
                         if i.collision == 2:
                             boy.item_sound.play()
-                            i.collision = 1  # 수정 해야함
+                            i.collision = 5  # 수정 해야함
                             i.type += 1
                             item_mushroom = Mushroom(i.x + 30, i.y + 30)
                             item_mushroom.MovingX = boy.getX()
@@ -292,7 +295,7 @@ def update():
                             game_world.add_object(item_mushroom, 3)
                         if i.collision == 3:
                             boy.item_sound.play()
-                            i.collision = 1
+                            i.collision = 5
                             i.type += 1
                             item_Flower = Flower(i.x + 30, i.y + 30)
                             item_Flower.MovingX = boy.getX()
@@ -373,8 +376,11 @@ def update():
             game_framework.change_state(gameover_state)
 
     if boy.next_stage:
-        game_framework.change_state(End_state)
+        game_framework.change_state(ready_state)
         server.roundnumber_state += 1
+        server.bool_big = boy.boolbig
+        server.bool_Flower = boy.boolFlower
+
 
 
 def draw():

@@ -10,7 +10,7 @@ class goal:
 
     def draw(self):
         self.image.clip_draw(0,0,160,176,self.x - self.MovingX,self.y,600,500)
-        draw_rectangle(*self.get_bb())
+        # draw_rectangle(*self.get_bb())
 
     def set_movingX(self, X):
         self.MovingX = X

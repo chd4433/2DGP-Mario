@@ -50,9 +50,9 @@ def update():
         logo_time = 0
         # game_framework.quit()
         if server.roundnumber_state == 1:
-            game_framework.change_state(main_state)
-        elif server.roundnumber_state == 2:
             game_framework.change_state(main_state2)
+        elif server.roundnumber_state == 2:
+            game_framework.change_state(main_state)
     delay(0.01)
     logo_time += 0.01
 

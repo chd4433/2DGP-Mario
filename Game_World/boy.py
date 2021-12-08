@@ -1111,11 +1111,11 @@ next_state_table = {
 
     RunState_Flower: {SHIFT_UP: WalkState_Flower, DASH_TIMER: WalkState_Flower, RIGHT_DOWN: IdleState_Flower, DEATH: DeathState, GOAL: GoalState,
                     LEFT_DOWN: IdleState_Flower, RIGHT_UP: IdleState_Flower, LEFT_UP: IdleState_Flower, SPACE: JumpState_Flower, FIRE_KEY: RunState_Flower, SHIFT_DOWN: RunState_Flower, TRANS_BIG: RunState_Big},
-    IdleState_Flower: {RIGHT_UP: WalkState_Flower, LEFT_UP: WalkState_Flower, RIGHT_DOWN: WalkState_Flower, DEATH: DeathState,
+    IdleState_Flower: {RIGHT_UP: WalkState_Flower, LEFT_UP: WalkState_Flower, RIGHT_DOWN: WalkState_Flower, DEATH: DeathState, TRANS_FIRE:IdleState_Flower,
                         LEFT_DOWN: WalkState_Flower, SHIFT_DOWN: IdleState_Flower, SHIFT_UP: IdleState_Flower, GOAL: GoalState,
                          FIRE_KEY: IdleState_Flower, SPACE: JumpState_Flower, TRANS_BIG:IdleState_Big},
     WalkState_Flower: {RIGHT_UP: IdleState_Flower, LEFT_UP: IdleState_Flower, LEFT_DOWN: IdleState_Flower, JUMP_TIMER2:WalkState_Flower,
-                    RIGHT_DOWN: IdleState_Flower, TRANS_BIG:WalkState_Big, DEATH: DeathState, GOAL: GoalState,
+                    RIGHT_DOWN: IdleState_Flower, TRANS_BIG:WalkState_Big, DEATH: DeathState, GOAL: GoalState,JUMP_TIMER1 :WalkState_Flower,
                     SHIFT_DOWN: RunState_Flower, SHIFT_UP: WalkState_Flower, FIRE_KEY: WalkState_Flower,
                      DASH_TIMER: RunState_Flower, SPACE: JumpState_Flower},
     JumpState_Flower: {JUMP_TIMER1: WalkState_Flower, JUMP_TIMER2: IdleState_Flower, RIGHT_UP: JumpState_Flower, TRANS_BIG:JumpState_Big, DEATH: DeathState, GOAL: GoalState,
@@ -1132,7 +1132,7 @@ class Boy:
     def __init__(self):
         global idle
         self.x, self.y = 800 // 2, 200 #125
-        self.MovingX = 6400
+        self.MovingX = 0
         self.image = load_image('res\idle\idle0.png')
         self.dir = 1
         self.velocity = 0
@@ -1162,22 +1162,22 @@ class Boy:
         self.bool_monster_bully = False
         self.monster_bully_count = 0
         self.bgm = load_music('res\sound\Super Mario Bross.mp3')
-        self.bgm.set_volume(32)
+        self.bgm.set_volume(16)
         self.bgm.repeat_play()
         self.Jump_sound = load_wav('res\sound\Jump.wav')
-        self.Jump_sound.set_volume(32)
+        self.Jump_sound.set_volume(16)
         self.item_sound = load_wav('res\sound\Itemsprouting.wav')
-        self.item_sound.set_volume(32)
+        self.item_sound.set_volume(16)
         self.grow_sound = load_wav('res\sound\Power up.wav')
-        self.grow_sound.set_volume(32)
+        self.grow_sound.set_volume(16)
         self.backgrow_sound = load_wav('res\sound\Power up.wav')
-        self.backgrow_sound.set_volume(32)
+        self.backgrow_sound.set_volume(16)
         self.kill_sound = load_wav('res\sound\kill_mob.wav')
-        self.kill_sound.set_volume(32)
+        self.kill_sound.set_volume(16)
         self.fire_sound = load_wav('res\sound\Throwing fireball.wav')
-        self.fire_sound.set_volume(32)
+        self.fire_sound.set_volume(16)
         self.death_sound = load_wav('res\sound\Mario dies.wav')
-        self.death_sound.set_volume(32)
+        self.death_sound.set_volume(16)
         # self.clear_sound = load_music('res\sound\clear.mp3')
         # self.clear_sound.set_volume(32)
 
